@@ -1,12 +1,22 @@
 import pandas as pd
 import logging
+import os
 
 logging.basicConfig(filename='badges_log.txt', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('badges_assigner')
 
 def assign_badges():
     try:
-        fighters_df = pd.read_csv('data/fighters_stats.csv')
+        file_path = 'data/fighters_stats.csv'
+        abs_file_path = os.path.abspath(file_path)
+        if not os.path.exists(abs_file_path):
+            logger.error(f"File not found: {abs_file_path}")
+            raise FileNotFoundError(f"File not found: {abs_file_path}")
+        
+        logger.info(f"Loading file: {abs_file_path}")
+        fighters_df = pd.read_csv(file_path)
+        logger.info(f"Loaded columns: {list(fighters_df.columns)}")
+        
         badges = []
 
         for _, row in fighters_df.iterrows():
@@ -18,7 +28,7 @@ def assign_badges():
             ko_tko_wins = row['ko_tko_wins'] if pd.notnull(row['ko_tko_wins']) else 0
             sub_wins = row['sub_wins'] if pd.notnull(row['sub_wins']) else 0
             total_fights = row['total_fights'] if pd.notnull(row['total_fights']) else 0
-            strikes_attempted = row['strikes_attempted'] if pd.notnull(row['strikes_attempted']) else 1
+            strikes_attempted = row['strikes_attempted'] if pd.notnull(row['strikes_attempted']) else 0
             kd = row['kd'] if pd.notnull(row['kd']) else 0
             splm = row['splm'] if pd.notnull(row['splm']) else 0
             splm_std = row['splm_std'] if pd.notnull(row['splm_std']) else 0
@@ -46,20 +56,23 @@ def assign_badges():
             five_round_decision_rate = row['five_round_decision_rate'] if pd.notnull(row['five_round_decision_rate']) else 0
             five_round_win_rate = row['five_round_win_rate'] if pd.notnull(row['five_round_win_rate']) else 0
 
+            # Badge calculations with zero/NaN checks
             if wins > 0:
-                if (ko_tko_wins / wins > 0.5) and (kd / strikes_attempted > 0.01) and (splm < 3.5):
+                ko_tko_ratio = ko_tko_wins / wins
+                sub_wins_ratio = sub_wins / wins
+                if (ko_tko_ratio > 0.5) and (strikes_attempted > 0 and kd / strikes_attempted > 0.01) and (splm < 3.5):
                     fighter_badges.append('KO Creamer')
                 if (splm > 4.5) and (splm_std < 1.5) and (total_fights >= 5):
                     fighter_badges.append('Yes, Chef')
                 if (td_avg > 2.5) and (career_td_acc > 40) and (ctrl_avg > 150):
                     fighter_badges.append('Russian Bear')
-                if (sub_wins / wins > 0.3) and (sub_att / total_fights > 0.8):
+                if (sub_wins_ratio > 0.3) and (sub_att / total_fights > 0.8):
                     fighter_badges.append('Pie-thon')
                 if (ground_finish_rate > 50) and (ground_landed_per_tko > 20) and (ctrl_avg > 90) and (total_fights >= 5) and (ko_tko_wins > 0):
                     fighter_badges.append('Doughmaker')
                 if ((leg_landed_avg > 8) or (body_landed_avg > 10)) and (leg_landed_avg + body_landed_avg > 20) and (ko_tko_wins > 0) and (total_fights >= 5):
                     fighter_badges.append('Kickin’ Pot Pie')
-            if (td_def > 70) and (td_attempts_received_avg < 3):
+            if (td_def > 70) and (td_attempts_received_avg < 5):
                 fighter_badges.append('Greasy')
             if (str_def > 60) and (sapm < 3):
                 fighter_badges.append('Can’t Touch This')
@@ -67,7 +80,7 @@ def assign_badges():
                 fighter_badges.append('Iron Chin')
             if (sub_att_received_avg < 0.3) and (sub_def > 90) and (never_submitted == 1):
                 fighter_badges.append('Locksmith')
-            if (total_fight_time_sec / total_fights > 600) and (sig_str_landed_per_sec > 0.5):
+            if total_fights > 0 and (total_fight_time_sec / total_fights > 600) and (sig_str_landed_per_sec > 0.5):
                 fighter_badges.append('The Dogwalker')
             if (five_round_fights >= 4) and (five_round_win_rate > 75) and (five_round_decision_rate > 50) and (five_round_wins >= 3):
                 fighter_badges.append('Champ Rounds')
