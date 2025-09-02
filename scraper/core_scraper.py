@@ -18,18 +18,13 @@ fight_details = []
 new_fight_links_all = []
 winner_names = []
 fighter_detail_data = []
-MAX_THREADS = 3
+MAX_THREADS = 2  # Reduced to avoid rate-limiting
 ua = UserAgent()
 HEADER = {'User-Agent': ua.chrome}
 
-# Initialize Firestore
-cred = credentials.Certificate('config/firebase-adminsdk.json')
-initialize_app(cred)
-db = firestore.client()
-
 def create_session():
     session = requests.Session()
-    retry_strat = Retry(backoff_factor=10, total=10, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=['GET'])
+    retry_strat = Retry(backoff_factor=15, total=10, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=['GET'])
     adapter = HTTPAdapter(max_retries=retry_strat)
     session.mount('https://', adapter)
     session.mount('http://', adapter)
@@ -38,10 +33,14 @@ def create_session():
 session = create_session()
 
 def get_last_scraped_date():
-    last_event = db.collection('Events').order_by('date', direction=firestore.Query.DESCENDING).limit(1).get()
-    if last_event:
-        return last_event[0].to_dict().get('date', '1900-01-01')
-    return '1900-01-01'
+    try:
+        events_df = pd.read_csv('data/event_details.csv')
+        if not events_df.empty:
+            return events_df['date'].max()
+        return '1900-01-01'
+    except FileNotFoundError:
+        logger.error("event_details.csv not found. Using default date.")
+        return '1900-01-01'
 
 last_date = get_last_scraped_date()
 logger.info(f"Last scraped date: {last_date}. Scraping new events...")
@@ -57,23 +56,32 @@ except FileNotFoundError:
     existing_fighters = pd.DataFrame()
 
 # Scrape event links
-ufc_link = "http://ufcstats.com/statistics/events/completed?page=all"
-response = session.get(ufc_link)
-text = response.text
-soup = BeautifulSoup(text, 'lxml')
-event_links_soup = soup.find_all('a', class_='b-link b-link_style_black')
-event_links = [link['href'] for link in event_links_soup]
+try:
+    ufc_link = "http://ufcstats.com/statistics/events/completed?page=all"
+    response = session.get(ufc_link)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, 'lxml')
+    event_links_soup = soup.find_all('a', class_='b-link b-link_style_black')
+    event_links = [link['href'] for link in event_links_soup]
+except Exception as e:
+    logger.error(f"Failed to scrape event links: {str(e)}")
+    event_links = []
 
 # Filter new events
 new_event_links = []
 for link in event_links:
-    event_response = session.get(link)
-    event_soup = BeautifulSoup(event_response.text, 'lxml')
-    date_loc_list = event_soup.find_all('li', 'b-list__box-list-item')
-    date = date_loc_list[0].text.replace("Date:", "").strip()
-    if date > last_date:
-        new_event_links.append(link)
-    time.sleep(1)  # Add delay to avoid rate-limiting
+    try:
+        event_response = session.get(link)
+        event_response.raise_for_status()
+        event_soup = BeautifulSoup(event_response.text, 'lxml')
+        date_loc_list = event_soup.find_all('li', 'b-list__box-list-item')
+        date = date_loc_list[0].text.replace("Date:", "").strip()
+        if date > last_date:
+            new_event_links.append(link)
+        time.sleep(2)  # Delay to avoid rate-limiting
+    except Exception as e:
+        logger.error(f"Failed to check event {link}: {str(e)}")
+        continue
 
 logger.info(f"Found {len(new_event_links)} new events.")
 
@@ -91,10 +99,12 @@ def get_event_data(item):
         fight_links = soup.find_all('tr', class_='b-fight-details__table-row b-fight-details__table-row__hover js-fight-details-click')
         with lock:
             for i in fight_links:
-                winner_name = None
-                winner_id = None
                 w_l_d = i.find('i', class_="b-flag__text").text
                 fight_id = i['data-link'][-16:]
+                if fight_id in existing_fights.get('fight_id', []).values:
+                    continue  # Skip existing fights
+                winner_name = None
+                winner_id = None
                 if w_l_d == "win":
                     players = i.find('td', class_="b-fight-details__table-col l-page_align_left")
                     players = players.find_all('a', class_="b-link b-link_style_black")
@@ -112,7 +122,7 @@ def get_event_data(item):
                         new_fight_links_all.append(i['data-link'])
                         winner_names.append(data_dic)
             logger.info(f"Scraped event {idx+1}/{len(new_event_links)}: {link}")
-        time.sleep(1)  # Delay to avoid rate-limiting
+        time.sleep(2)
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to retrieve event {link}: {str(e)}")
 
@@ -126,6 +136,8 @@ def get_fight_data(item):
         event_name = soup.find('a', class_="b-link").text.strip()
         event_id = soup.find('a', class_="b-link")['href'][-16:]
         fight_id = link[-16:]
+        if fight_id in existing_fights.get('fight_id', []).values:
+            return  # Skip existing fights
         fighter_nams = soup.find_all('a', class_='b-fight-details__person-link')
         r_name = fighter_nams[0].text.strip()
         b_name = fighter_nams[1].text.strip()
@@ -411,7 +423,7 @@ def get_fight_data(item):
                 }
                 fight_details.append(data_dic)
                 logger.info(f"Scraped fight {idx+1}/{len(new_fight_links_all)}: {link}")
-        time.sleep(1)  # Delay to avoid rate-limiting
+        time.sleep(2)
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed fight {idx+1}/{len(new_fight_links_all)}: {link} - {str(e)}")
         return
@@ -487,7 +499,7 @@ def get_fighter_data(item):
             }
             fighter_detail_data.append(data_dic)
             logger.info(f"Scraped fighter {idx+1}/{len(all_ids)}: {id}")
-        time.sleep(1)  # Delay to avoid rate-limiting
+        time.sleep(2)
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed fighter {idx+1}/{len(all_ids)}: {id} - {str(e)}")
         return
