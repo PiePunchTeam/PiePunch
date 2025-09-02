@@ -32,18 +32,16 @@ def create_session():
 
 session = create_session()
 
-def get_last_scraped_date():
+def get_existing_event_ids():
     try:
         events_df = pd.read_csv('data/event_details.csv')
-        if not events_df.empty:
-            return events_df['date'].max()
-        return '1900-01-01'
+        return set(events_df['event_id'].astype(str).unique()), events_df['date'].max()
     except FileNotFoundError:
-        logger.error("event_details.csv not found. Using default date.")
-        return '1900-01-01'
+        logger.error("event_details.csv not found. Using empty set and default date.")
+        return set(), '1900-01-01'
 
-last_date = get_last_scraped_date()
-logger.info(f"Last scraped date: {last_date}. Scraping new events...")
+existing_event_ids, last_date = get_existing_event_ids()
+logger.info(f"Last scraped date: {last_date}. Found {len(existing_event_ids)} existing events.")
 
 # Load existing CSVs
 try:
@@ -71,6 +69,9 @@ except Exception as e:
 new_event_links = []
 for link in event_links:
     try:
+        event_id = link[-16:]
+        if event_id in existing_event_ids:
+            continue  # Skip already scraped events
         event_response = session.get(link)
         event_response.raise_for_status()
         event_soup = BeautifulSoup(event_response.text, 'lxml')
@@ -93,6 +94,8 @@ def get_event_data(item):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'lxml')
         event_id = link[-16:]
+        if event_id in existing_event_ids:
+            return  # Skip already scraped events
         date_loc_list = soup.find_all('li', 'b-list__box-list-item')
         date = date_loc_list[0].text.replace("Date:", "").strip()
         location = date_loc_list[1].text.replace("Location:", "").strip()
