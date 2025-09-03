@@ -80,7 +80,7 @@ def assign_badges():
                     fighter_badges.append('Pie-thon')
                     pie_thon_count += 1
                     logger.info(f"Pie-thon awarded to fighter {fid}: sub_wins_ratio={sub_wins_ratio}, sub_att_per_fight={sub_att / total_fights}, total_fights={total_fights}")
-                if (ground_finish_rate > 55) and (ground_landed_per_tko > 15) and (ctrl_avg > 150) and (total_fights >= 5) and (ko_tko_wins > 0):
+                if (ground_finish_rate > 50) and (ground_landed_per_tko > 12) and (ctrl_avg > 150) and (total_fights >= 5) and (ko_tko_wins > 0):
                     fighter_badges.append('Doughmaker')
                     doughmaker_count += 1
                     logger.info(f"Doughmaker awarded to fighter {fid}: ground_finish_rate={ground_finish_rate}, ground_landed_per_tko={ground_landed_per_tko}, ctrl_avg={ctrl_avg}, total_fights={total_fights}, ko_tko_wins={ko_tko_wins}")
