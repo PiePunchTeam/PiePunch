@@ -1,6 +1,7 @@
 import pandas as pd
 import logging
 import os
+import csv
 
 logging.basicConfig(filename='badges_log.txt', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('badges_assigner')
@@ -18,7 +19,7 @@ def assign_badges():
         logger.info(f"Loaded columns: {list(fighters_df.columns)}")
         
         badges = []
-        yes_chef_count = 0
+        bakers_dozen_count = 0
 
         for _, row in fighters_df.iterrows():
             fid = row['id']
@@ -62,9 +63,9 @@ def assign_badges():
                 if (ko_tko_ratio > 0.25) and (strikes_attempted > 0 and kd / strikes_attempted > 0.002) and (splm < 6.5):
                     fighter_badges.append('KO Creamer')
                 if (splm > 3.5) and (splm_std < 50.0) and (total_fights >= 5):
-                    fighter_badges.append('Yes, Chef')
-                    yes_chef_count += 1
-                    logger.info(f"Yes, Chef awarded to fighter {fid}: splm={splm}, splm_std={splm_std}, total_fights={total_fights}")
+                    fighter_badges.append('Bakers Dozen')
+                    bakers_dozen_count += 1
+                    logger.info(f"Bakers Dozen awarded to fighter {fid}: splm={splm}, splm_std={splm_std}, total_fights={total_fights}")
                 if (td_avg > 2.8) and (career_td_acc > 42) and (ctrl_avg > 200):
                     fighter_badges.append('Russian Bear')
                 if (sub_wins_ratio > 0.15) and (sub_att / total_fights > 0.5):
@@ -91,13 +92,15 @@ def assign_badges():
                 'badges': ','.join(fighter_badges) if fighter_badges else None
             })
 
-        logger.info(f"Total Yes, Chef badges awarded: {yes_chef_count}")
+        logger.info(f"Total Bakers Dozen badges awarded: {bakers_dozen_count}")
         df = pd.DataFrame(badges)
-        df.to_csv('data/badges.csv', index=False)
+        df.to_csv('data/badges.csv', quoting=csv.QUOTE_ALL, index=False)
         logger.info(f"Generated badges.csv for {len(fighters_df)} fighters.")
         print(f"Generated badges.csv for {len(fighters_df)} fighters.")
     except Exception as e:
         logger.error(f"Failed to assign badges: {str(e)}")
         raise
 
-assign_badges()
+if __name__ == '__main__':
+    import csv
+    assign_badges()

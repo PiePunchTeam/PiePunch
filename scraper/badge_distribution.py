@@ -1,6 +1,7 @@
 import pandas as pd
 import logging
 import os
+import csv
 from datetime import datetime
 
 logging.basicConfig(filename='badge_distribution_log.txt', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -23,7 +24,7 @@ def calculate_badge_distribution():
 
         badge_counts = {
             'KO Creamer': 0,
-            'Yes, Chef': 0,
+            'Bakers Dozen': 0,
             'Russian Bear': 0,
             'Pie-thon': 0,
             'Doughmaker': 0,
@@ -36,7 +37,7 @@ def calculate_badge_distribution():
             'Champ Rounds': 0
         }
         total_fighters = len(badges_df)
-        yes_chef_fighters = []
+        bakers_dozen_fighters = []
 
         for _, row in badges_df.iterrows():
             badges = str(row['badges']).split(',') if pd.notnull(row['badges']) else []
@@ -44,13 +45,13 @@ def calculate_badge_distribution():
                 badge = badge.strip()
                 if badge in badge_counts:
                     badge_counts[badge] += 1
-                    if badge == 'Yes, Chef':
-                        yes_chef_fighters.append(row['id'])
-                        logger.info(f"Yes, Chef found for fighter {row['id']}: badges={row['badges']}")
+                    if badge == 'Bakers Dozen':
+                        bakers_dozen_fighters.append(row['id'])
+                        logger.info(f"Bakers Dozen found for fighter {row['id']}: badges={row['badges']}")
                 else:
                     logger.warning(f"Unrecognized badge '{badge}' for fighter {row['id']}")
 
-        logger.info(f"Yes, Chef fighters: {yes_chef_fighters}")
+        logger.info(f"Bakers Dozen fighters: {bakers_dozen_fighters}")
         distribution = []
         for badge, count in badge_counts.items():
             percentage = (count / total_fighters * 100) if total_fighters > 0 else 0
