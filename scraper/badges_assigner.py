@@ -90,7 +90,7 @@ def assign_badges():
                     fighter_badges.append('Kickin’ Pot Pie')
                     kickin_pot_pie_count += 1
                     logger.info(f"Kickin’ Pot Pie awarded to fighter {fid}: leg_landed_avg={leg_landed_avg}, body_landed_avg={body_landed_avg}, total_landed={leg_landed_avg + body_landed_avg}, ko_tko_wins={ko_tko_wins}, total_fights={total_fights}")
-            if (td_def > 85) and (td_attempts_received_avg < 10):
+            if (td_def > 82) and (td_attempts_received_avg < 10):
                 fighter_badges.append('Greasy')
                 greasy_count += 1
                 logger.info(f"Greasy awarded to fighter {fid}: td_def={td_def}, td_attempts_received_avg={td_attempts_received_avg}")
