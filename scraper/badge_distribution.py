@@ -1,6 +1,7 @@
 import pandas as pd
 import logging
 import os
+from datetime import datetime
 
 logging.basicConfig(filename='badge_distribution_log.txt', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('badge_distribution')
@@ -13,8 +14,11 @@ def calculate_badge_distribution():
             logger.error(f"File not found: {abs_file_path}")
             raise FileNotFoundError(f"File not found: {abs_file_path}")
         
-        logger.info(f"Loading file: {abs_file_path}")
-        badges_df = pd.read_csv(file_path)
+        # Log file timestamp
+        file_mtime = os.path.getmtime(abs_file_path)
+        file_timestamp = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M:%S')
+        logger.info(f"Loading file: {abs_file_path} (Last modified: {file_timestamp})")
+        badges_df = pd.read_csv(file_path, quoting=csv.QUOTE_ALL)
         logger.info(f"Loaded badges.csv with {len(badges_df)} fighters")
 
         badge_counts = {
@@ -35,7 +39,7 @@ def calculate_badge_distribution():
         yes_chef_fighters = []
 
         for _, row in badges_df.iterrows():
-            badges = str(row['badges']).replace('Yes,Chef', 'Yes, Chef').split(',') if pd.notnull(row['badges']) else []
+            badges = str(row['badges']).split(',') if pd.notnull(row['badges']) else []
             for badge in badges:
                 badge = badge.strip()
                 if badge in badge_counts:
@@ -67,4 +71,6 @@ def calculate_badge_distribution():
         logger.error(f"Failed to calculate badge distribution: {str(e)}")
         raise
 
-calculate_badge_distribution()
+if __name__ == '__main__':
+    import csv
+    calculate_badge_distribution()
