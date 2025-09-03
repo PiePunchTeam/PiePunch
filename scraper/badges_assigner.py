@@ -22,6 +22,8 @@ def assign_badges():
         bakers_dozen_count = 0
         russian_bear_count = 0
         pie_thon_count = 0
+        doughmaker_count = 0
+        ko_creamer_count = 0
 
         for _, row in fighters_df.iterrows():
             fid = row['id']
@@ -62,8 +64,10 @@ def assign_badges():
             if wins > 0:
                 ko_tko_ratio = ko_tko_wins / wins
                 sub_wins_ratio = sub_wins / wins
-                if (ko_tko_ratio > 0.25) and (strikes_attempted > 0 and kd / strikes_attempted > 0.002) and (splm < 6.5):
+                if (ko_tko_ratio > 0.22) and (strikes_attempted > 0 and kd / strikes_attempted > 0.0018) and (splm < 7.0):
                     fighter_badges.append('KO Creamer')
+                    ko_creamer_count += 1
+                    logger.info(f"KO Creamer awarded to fighter {fid}: ko_tko_ratio={ko_tko_ratio}, kd_per_strike={kd / strikes_attempted}, splm={splm}")
                 if (splm > 4.0) and (splm_std < 45.0) and (total_fights >= 10):
                     fighter_badges.append('Bakers Dozen')
                     bakers_dozen_count += 1
@@ -76,8 +80,10 @@ def assign_badges():
                     fighter_badges.append('Pie-thon')
                     pie_thon_count += 1
                     logger.info(f"Pie-thon awarded to fighter {fid}: sub_wins_ratio={sub_wins_ratio}, sub_att_per_fight={sub_att / total_fights}, total_fights={total_fights}")
-                if (ground_finish_rate > 50) and (ground_landed_per_tko > 12) and (ctrl_avg > 100) and (total_fights >= 5) and (ko_tko_wins > 0):
+                if (ground_finish_rate > 65) and (ground_landed_per_tko > 18) and (ctrl_avg > 200) and (total_fights >= 5) and (ko_tko_wins > 0):
                     fighter_badges.append('Doughmaker')
+                    doughmaker_count += 1
+                    logger.info(f"Doughmaker awarded to fighter {fid}: ground_finish_rate={ground_finish_rate}, ground_landed_per_tko={ground_landed_per_tko}, ctrl_avg={ctrl_avg}, total_fights={total_fights}, ko_tko_wins={ko_tko_wins}")
                 if ((leg_landed_avg > 15) or (body_landed_avg > 18)) and (leg_landed_avg + body_landed_avg > 35) and (ko_tko_wins > 1) and (total_fights >= 7):
                     fighter_badges.append('Kickin’ Pot Pie')
             if (td_def > 78) and (td_attempts_received_avg < 12):
@@ -98,9 +104,11 @@ def assign_badges():
                 'badges': ','.join(fighter_badges) if fighter_badges else None
             })
 
+        logger.info(f"Total KO Creamer badges awarded: {ko_creamer_count}")
         logger.info(f"Total Bakers Dozen badges awarded: {bakers_dozen_count}")
         logger.info(f"Total Russian Bear badges awarded: {russian_bear_count}")
         logger.info(f"Total Pie-thon badges awarded: {pie_thon_count}")
+        logger.info(f"Total Doughmaker badges awarded: {doughmaker_count}")
         df = pd.DataFrame(badges)
         df.to_csv('data/badges.csv', quoting=csv.QUOTE_ALL, index=False)
         logger.info(f"Generated badges.csv for {len(fighters_df)} fighters.")
