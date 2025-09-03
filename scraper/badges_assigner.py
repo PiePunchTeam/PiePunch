@@ -62,7 +62,7 @@ def assign_badges():
                 sub_wins_ratio = sub_wins / wins
                 if (ko_tko_ratio > 0.25) and (strikes_attempted > 0 and kd / strikes_attempted > 0.002) and (splm < 6.5):
                     fighter_badges.append('KO Creamer')
-                if (splm > 4.5) and (splm_std < 40.0) and (total_fights >= 10):
+                if (splm > 4.0) and (splm_std < 45.0) and (total_fights >= 10):
                     fighter_badges.append('Bakers Dozen')
                     bakers_dozen_count += 1
                     logger.info(f"Bakers Dozen awarded to fighter {fid}: splm={splm}, splm_std={splm_std}, total_fights={total_fights}")
