@@ -35,7 +35,7 @@ def calculate_badge_distribution():
         yes_chef_fighters = []
 
         for _, row in badges_df.iterrows():
-            badges = str(row['badges']).split(',') if pd.notnull(row['badges']) else []
+            badges = str(row['badges']).replace('Yes,Chef', 'Yes, Chef').split(',') if pd.notnull(row['badges']) else []
             for badge in badges:
                 badge = badge.strip()
                 if badge in badge_counts:
@@ -43,6 +43,8 @@ def calculate_badge_distribution():
                     if badge == 'Yes, Chef':
                         yes_chef_fighters.append(row['id'])
                         logger.info(f"Yes, Chef found for fighter {row['id']}: badges={row['badges']}")
+                else:
+                    logger.warning(f"Unrecognized badge '{badge}' for fighter {row['id']}")
 
         logger.info(f"Yes, Chef fighters: {yes_chef_fighters}")
         distribution = []
