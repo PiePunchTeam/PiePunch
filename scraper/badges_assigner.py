@@ -25,6 +25,7 @@ def assign_badges():
         doughmaker_count = 0
         ko_creamer_count = 0
         kickin_pot_pie_count = 0
+        greasy_count = 0
 
         for _, row in fighters_df.iterrows():
             fid = row['id']
@@ -89,8 +90,10 @@ def assign_badges():
                     fighter_badges.append('Kickin’ Pot Pie')
                     kickin_pot_pie_count += 1
                     logger.info(f"Kickin’ Pot Pie awarded to fighter {fid}: leg_landed_avg={leg_landed_avg}, body_landed_avg={body_landed_avg}, total_landed={leg_landed_avg + body_landed_avg}, ko_tko_wins={ko_tko_wins}, total_fights={total_fights}")
-            if (td_def > 78) and (td_attempts_received_avg < 12):
+            if (td_def > 85) and (td_attempts_received_avg < 10):
                 fighter_badges.append('Greasy')
+                greasy_count += 1
+                logger.info(f"Greasy awarded to fighter {fid}: td_def={td_def}, td_attempts_received_avg={td_attempts_received_avg}")
             if (str_def > 63) and (sapm < 2.7):
                 fighter_badges.append('Can’t Touch This')
             if (kd_received_avg < 0.15) and (ko_loss_rate < 10):
@@ -113,6 +116,7 @@ def assign_badges():
         logger.info(f"Total Pie-thon badges awarded: {pie_thon_count}")
         logger.info(f"Total Doughmaker badges awarded: {doughmaker_count}")
         logger.info(f"Total Kickin’ Pot Pie badges awarded: {kickin_pot_pie_count}")
+        logger.info(f"Total Greasy badges awarded: {greasy_count}")
         df = pd.DataFrame(badges)
         df.to_csv('data/badges.csv', quoting=csv.QUOTE_ALL, index=False)
         logger.info(f"Generated badges.csv for {len(fighters_df)} fighters.")
