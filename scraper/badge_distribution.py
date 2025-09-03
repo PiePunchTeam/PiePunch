@@ -17,7 +17,6 @@ def calculate_badge_distribution():
         badges_df = pd.read_csv(file_path)
         logger.info(f"Loaded badges.csv with {len(badges_df)} fighters")
 
-        # Initialize badge counts
         badge_counts = {
             'KO Creamer': 0,
             'Yes, Chef': 0,
@@ -33,16 +32,19 @@ def calculate_badge_distribution():
             'Champ Rounds': 0
         }
         total_fighters = len(badges_df)
+        yes_chef_fighters = []
 
-        # Count badge occurrences
         for _, row in badges_df.iterrows():
             badges = str(row['badges']).split(',') if pd.notnull(row['badges']) else []
             for badge in badges:
                 badge = badge.strip()
                 if badge in badge_counts:
                     badge_counts[badge] += 1
+                    if badge == 'Yes, Chef':
+                        yes_chef_fighters.append(row['id'])
+                        logger.info(f"Yes, Chef found for fighter {row['id']}: badges={row['badges']}")
 
-        # Calculate percentages and log results
+        logger.info(f"Yes, Chef fighters: {yes_chef_fighters}")
         distribution = []
         for badge, count in badge_counts.items():
             percentage = (count / total_fighters * 100) if total_fighters > 0 else 0
@@ -53,7 +55,6 @@ def calculate_badge_distribution():
             })
             logger.info(f"Badge: {badge}, Count: {count}, Percentage: {percentage:.2f}%")
 
-        # Save distribution to CSV
         df = pd.DataFrame(distribution)
         df.to_csv('data/badge_distribution.csv', index=False)
         logger.info(f"Generated badge_distribution.csv with distribution for {len(badge_counts)} badges")
