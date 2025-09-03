@@ -67,7 +67,7 @@ def assign_badges():
                     fighter_badges.append('Bakers Dozen')
                     bakers_dozen_count += 1
                     logger.info(f"Bakers Dozen awarded to fighter {fid}: splm={splm}, splm_std={splm_std}, total_fights={total_fights}")
-                if (td_avg > 2.5) and (career_td_acc > 40) and (ctrl_avg > 200) and (total_fights >= 5):
+                if (td_avg > 2.3) and (career_td_acc > 38) and (ctrl_avg > 180) and (total_fights >= 5):
                     fighter_badges.append('Russian Bear')
                     russian_bear_count += 1
                     logger.info(f"Russian Bear awarded to fighter {fid}: td_avg={td_avg}, career_td_acc={career_td_acc}, ctrl_avg={ctrl_avg}, total_fights={total_fights}")
