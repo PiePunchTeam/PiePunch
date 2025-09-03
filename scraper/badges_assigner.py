@@ -21,6 +21,7 @@ def assign_badges():
         badges = []
         bakers_dozen_count = 0
         russian_bear_count = 0
+        pie_thon_count = 0
 
         for _, row in fighters_df.iterrows():
             fid = row['id']
@@ -71,8 +72,10 @@ def assign_badges():
                     fighter_badges.append('Russian Bear')
                     russian_bear_count += 1
                     logger.info(f"Russian Bear awarded to fighter {fid}: td_avg={td_avg}, career_td_acc={career_td_acc}, ctrl_avg={ctrl_avg}, total_fights={total_fights}")
-                if (sub_wins_ratio > 0.15) and (sub_att / total_fights > 0.5):
+                if (sub_wins_ratio > 0.12) and (sub_att / total_fights > 0.4) and (total_fights >= 5):
                     fighter_badges.append('Pie-thon')
+                    pie_thon_count += 1
+                    logger.info(f"Pie-thon awarded to fighter {fid}: sub_wins_ratio={sub_wins_ratio}, sub_att_per_fight={sub_att / total_fights}, total_fights={total_fights}")
                 if (ground_finish_rate > 50) and (ground_landed_per_tko > 12) and (ctrl_avg > 100) and (total_fights >= 5) and (ko_tko_wins > 0):
                     fighter_badges.append('Doughmaker')
                 if ((leg_landed_avg > 15) or (body_landed_avg > 18)) and (leg_landed_avg + body_landed_avg > 35) and (ko_tko_wins > 1) and (total_fights >= 7):
@@ -97,6 +100,7 @@ def assign_badges():
 
         logger.info(f"Total Bakers Dozen badges awarded: {bakers_dozen_count}")
         logger.info(f"Total Russian Bear badges awarded: {russian_bear_count}")
+        logger.info(f"Total Pie-thon badges awarded: {pie_thon_count}")
         df = pd.DataFrame(badges)
         df.to_csv('data/badges.csv', quoting=csv.QUOTE_ALL, index=False)
         logger.info(f"Generated badges.csv for {len(fighters_df)} fighters.")
