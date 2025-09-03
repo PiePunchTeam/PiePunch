@@ -26,6 +26,7 @@ def assign_badges():
         ko_creamer_count = 0
         kickin_pot_pie_count = 0
         greasy_count = 0
+        cant_touch_this_count = 0
 
         for _, row in fighters_df.iterrows():
             fid = row['id']
@@ -94,8 +95,10 @@ def assign_badges():
                 fighter_badges.append('Greasy')
                 greasy_count += 1
                 logger.info(f"Greasy awarded to fighter {fid}: td_def={td_def}, td_attempts_received_avg={td_attempts_received_avg}")
-            if (str_def > 63) and (sapm < 2.7):
+            if (str_def > 55) and (sapm < 3.3):
                 fighter_badges.append('Can’t Touch This')
+                cant_touch_this_count += 1
+                logger.info(f"Can’t Touch This awarded to fighter {fid}: str_def={str_def}, sapm={sapm}")
             if (kd_received_avg < 0.15) and (ko_loss_rate < 10):
                 fighter_badges.append('Iron Chin')
             if (sub_att_received_avg < 0.3) and (sub_def > 85) and (never_submitted == 1):
@@ -117,6 +120,7 @@ def assign_badges():
         logger.info(f"Total Doughmaker badges awarded: {doughmaker_count}")
         logger.info(f"Total Kickin’ Pot Pie badges awarded: {kickin_pot_pie_count}")
         logger.info(f"Total Greasy badges awarded: {greasy_count}")
+        logger.info(f"Total Can’t Touch This badges awarded: {cant_touch_this_count}")
         df = pd.DataFrame(badges)
         df.to_csv('data/badges.csv', quoting=csv.QUOTE_ALL, index=False)
         logger.info(f"Generated badges.csv for {len(fighters_df)} fighters.")
