@@ -95,10 +95,10 @@ def assign_badges():
                 fighter_badges.append('Greasy')
                 greasy_count += 1
                 logger.info(f"Greasy awarded to fighter {fid}: td_def={td_def}, td_attempts_received_avg={td_attempts_received_avg}")
-            if (str_def > 55) and (sapm < 3.3):
+            if (str_def > 55) and (sapm < 3.3) and (total_fights >= 10):
                 fighter_badges.append('Can’t Touch This')
                 cant_touch_this_count += 1
-                logger.info(f"Can’t Touch This awarded to fighter {fid}: str_def={str_def}, sapm={sapm}")
+                logger.info(f"Can’t Touch This awarded to fighter {fid}: str_def={str_def}, sapm={sapm}, total_fights={total_fights}")
             if (kd_received_avg < 0.15) and (ko_loss_rate < 10):
                 fighter_badges.append('Iron Chin')
             if (sub_att_received_avg < 0.3) and (sub_def > 85) and (never_submitted == 1):
