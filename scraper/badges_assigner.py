@@ -100,7 +100,7 @@ def assign_badges():
                 fighter_badges.append('Can’t Touch This')
                 cant_touch_this_count += 1
                 logger.info(f"Can’t Touch This awarded to fighter {fid}: str_def={str_def}, sapm={sapm}, total_fights={total_fights}")
-            if (kd_received_avg < 0.2) and (ko_loss_rate < 7) and (total_fights >= 10):
+            if (kd_received_avg < 0.3) and (ko_loss_rate < 10) and (total_fights >= 10):
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
                 logger.info(f"Iron Chin awarded to fighter {fid}: kd_received_avg={kd_received_avg}, ko_loss_rate={ko_loss_rate}, total_fights={total_fights}")
