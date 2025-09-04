@@ -27,8 +27,10 @@ def upload_to_firestore():
                 raise FileNotFoundError(f"File not found: {file_path}")
             
             df = pd.read_csv(file_path)
+            updated_count = 0
+            new_count = 0
             
-            # Upload each row as a document, using the specified ID field
+            # Upload each row as a document
             for _, row in df.iterrows():
                 doc_id = str(row[id_field])
                 doc_data = row.to_dict()
@@ -41,11 +43,29 @@ def upload_to_firestore():
                 for key, value in doc_data.items():
                     if isinstance(value, float) and np.isnan(value):
                         doc_data[key] = None
-                # Upload to Firestore
-                db.collection(collection_name).document(doc_id).set(doc_data)
-                print(f"Uploaded document {doc_id} to collection {collection_name}")
+                
+                # Check if document exists in Firestore
+                doc_ref = db.collection(collection_name).document(doc_id)
+                existing_doc = doc_ref.get()
+                
+                if existing_doc.exists:
+                    # Compare existing data with new data
+                    existing_data = existing_doc.to_dict()
+                    # Convert badges to list for comparison
+                    if 'badges' in existing_data and isinstance(existing_data['badges'], str):
+                        existing_data['badges'] = existing_data['badges'].split(',') if existing_data['badges'] else []
+                    if existing_data == doc_data:
+                        continue  # Skip if data is unchanged
+                    else:
+                        doc_ref.set(doc_data)  # Update changed document
+                        updated_count += 1
+                        print(f"Updated document {doc_id} in collection {collection_name}")
+                else:
+                    doc_ref.set(doc_data)  # Add new document
+                    new_count += 1
+                    print(f"Added new document {doc_id} to collection {collection_name}")
             
-            print(f"Uploaded {len(df)} documents to collection {collection_name}")
+            print(f"Uploaded {new_count} new and {updated_count} updated documents to collection {collection_name}")
         
         print("Firestore upload complete!")
     
