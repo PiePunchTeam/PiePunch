@@ -29,6 +29,8 @@ def assign_badges():
         cant_touch_this_count = 0
         iron_chin_count = 0
         locksmith_count = 0
+        dogwalker_count = 0
+        champ_rounds_count = 0
 
         for _, row in fighters_df.iterrows():
             fid = row['id']
@@ -109,10 +111,14 @@ def assign_badges():
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
                 logger.info(f"Locksmith awarded to fighter {fid}: sub_att_received_avg={sub_att_received_avg}, sub_def={sub_def}, never_submitted={never_submitted}, total_fights={total_fights}")
-            if total_fights > 0 and (total_fight_time_sec / total_fights > 450) and (sig_str_landed_per_sec > 0.3):
+            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 300) and (sig_str_landed_per_sec > 0.2):
                 fighter_badges.append('The Dogwalker')
-            if (five_round_fights >= 2) and (five_round_win_rate > 60) and (five_round_decision_rate > 40) and (five_round_wins >= 1):
+                dogwalker_count += 1
+                logger.info(f"The Dogwalker awarded to fighter {fid}: total_fight_time_avg={total_fight_time_sec / total_fights}, sig_str_landed_per_sec={sig_str_landed_per_sec}, total_fights={total_fights}")
+            if (five_round_fights >= 1) and (five_round_win_rate > 50) and (five_round_decision_rate > 30) and (five_round_wins >= 1):
                 fighter_badges.append('Champ Rounds')
+                champ_rounds_count += 1
+                logger.info(f"Champ Rounds awarded to fighter {fid}: five_round_fights={five_round_fights}, five_round_win_rate={five_round_win_rate}, five_round_decision_rate={five_round_decision_rate}, five_round_wins={five_round_wins}")
 
             badges.append({
                 'id': fid,
@@ -129,6 +135,8 @@ def assign_badges():
         logger.info(f"Total Can’t Touch This badges awarded: {cant_touch_this_count}")
         logger.info(f"Total Iron Chin badges awarded: {iron_chin_count}")
         logger.info(f"Total Locksmith badges awarded: {locksmith_count}")
+        logger.info(f"Total The Dogwalker badges awarded: {dogwalker_count}")
+        logger.info(f"Total Champ Rounds badges awarded: {champ_rounds_count}")
         df = pd.DataFrame(badges)
         df.to_csv('data/badges.csv', quoting=csv.QUOTE_ALL, index=False)
         logger.info(f"Generated badges.csv for {len(fighters_df)} fighters.")
