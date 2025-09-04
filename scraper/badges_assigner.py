@@ -85,13 +85,13 @@ def assign_badges():
             if (td_def > 82) and (td_attempts_received_avg < 10):
                 fighter_badges.append('Greasy')
                 greasy_count += 1
-            if (str_def > 58.5) and (sapm < 3.15) and (total_fights >= 5):
+            if (str_def > 59) and (sapm < 3.1) and (total_fights >= 5):
                 fighter_badges.append('Can’t Touch This')
                 cant_touch_this_count += 1
             if (kd_received_avg < 0.15) and (ko_loss_rate < 4) and (total_fights >= 5):
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
-            if (sub_att_received_avg < 0.65) and ((sub_def > 99.5) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 5):
+            if (sub_att_received_avg < 0.65) and ((sub_def > 99.7) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 5):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
             if (total_fights >= 5) and (total_fight_time_sec / total_fights > 160) and (sig_str_landed_per_sec > 0.23):
