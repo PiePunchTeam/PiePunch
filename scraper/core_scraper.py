@@ -18,6 +18,9 @@ fight_details = []
 new_fight_links_all = []
 winner_names = []
 fighter_detail_data = []
+upcoming_event_details = []
+upcoming_fight_details = []
+new_upcoming_fight_links = []
 MAX_THREADS = 2
 ua = UserAgent()
 HEADER = {'User-Agent': ua.chrome}
@@ -32,54 +35,58 @@ def create_session():
 
 session = create_session()
 
-def get_existing_event_ids():
+def get_existing_ids(file_path, id_field, date_field=None):
     try:
-        events_df = pd.read_csv('data/event_details.csv')
-        return set(events_df['event_id'].astype(str).unique()), events_df['date'].max()
-    except FileNotFoundError:
-        logger.error("event_details.csv not found. Using empty set and default date.")
-        return set(), '1900-01-01'
-    except KeyError:
-        logger.error("event_details.csv missing 'event_id' or 'date' column.")
+        df = pd.read_csv(file_path)
+        ids = set(df[id_field].astype(str).unique())
+        max_date = df[date_field].max() if date_field and date_field in df.columns else '1900-01-01'
+        return ids, max_date
+    except (FileNotFoundError, KeyError):
+        logger.error(f"{file_path} not found or missing required columns.")
         return set(), '1900-01-01'
 
-existing_event_ids, last_date = get_existing_event_ids()
-logger.info(f"Last scraped date: {last_date}. Found {len(existing_event_ids)} existing events.")
+# Load existing CSVs
+existing_event_ids, last_event_date = get_existing_ids('data/event_details.csv', 'event_id', 'date')
+existing_fight_ids = get_existing_ids('data/fight_details.csv', 'fight_id')[0]
+existing_fighter_ids = get_existing_ids('data/fighter_details.csv', 'id')[0]
+existing_upcoming_event_ids, last_upcoming_event_date = get_existing_ids('data/upcoming_event_details.csv', 'event_id', 'date')
+existing_upcoming_fight_ids = get_existing_ids('data/upcoming_fight_details.csv', 'fight_id')[0]
+logger.info(f"Last completed event date: {last_event_date}. Found {len(existing_event_ids)} events, {len(existing_fight_ids)} fights, {len(existing_fighter_ids)} fighters.")
+logger.info(f"Last upcoming event date: {last_upcoming_event_date}. Found {len(existing_upcoming_event_ids)} upcoming events, {len(existing_upcoming_fight_ids)} upcoming fights.")
 
-# Load existing CSVs and check headers
+# Load existing CSVs
 try:
     existing_events = pd.read_csv('data/event_details.csv')
-    if 'event_id' not in existing_events.columns or 'fight_id' not in existing_events.columns:
-        logger.error("event_details.csv missing required headers: event_id, fight_id")
-        raise KeyError("Missing headers in event_details.csv")
     existing_fights = pd.read_csv('data/fight_details.csv')
-    if 'fight_id' not in existing_fights.columns or 'r_id' not in existing_fights.columns:
-        logger.error("fight_details.csv missing required headers: fight_id, r_id")
-        raise KeyError("Missing headers in fight_details.csv")
     existing_fighters = pd.read_csv('data/fighter_details.csv')
-    if 'id' not in existing_fighters.columns:
-        logger.error("fighter_details.csv missing required header: id")
-        raise KeyError("Missing headers in fighter_details.csv")
+    existing_upcoming_events = pd.read_csv('data/upcoming_event_details.csv')
+    existing_upcoming_fights = pd.read_csv('data/upcoming_fight_details.csv')
 except FileNotFoundError:
     existing_events = pd.DataFrame()
     existing_fights = pd.DataFrame()
     existing_fighters = pd.DataFrame()
+    existing_upcoming_events = pd.DataFrame()
+    existing_upcoming_fights = pd.DataFrame()
 
-# Scrape event links
-try:
-    ufc_link = "http://ufcstats.com/statistics/events/completed?page=all"
-    response = session.get(ufc_link)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.text, 'lxml')
-    event_links_soup = soup.find_all('a', class_='b-link b-link_style_black')
-    event_links = [link['href'] for link in event_links_soup]
-except Exception as e:
-    logger.error(f"Failed to scrape event links: {str(e)}")
-    event_links = []
+# Scrape event links (completed and upcoming)
+def scrape_event_links(url):
+    try:
+        response = session.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'lxml')
+        event_links_soup = soup.find_all('a', class_='b-link b-link_style_black')
+        return [link['href'] for link in event_links_soup]
+    except Exception as e:
+        logger.error(f"Failed to scrape event links from {url}: {str(e)}")
+        return []
 
-# Filter new events
-new_event_links = []
-for link in event_links:
+completed_event_links = scrape_event_links("http://ufcstats.com/statistics/events/completed?page=all")
+upcoming_event_links = scrape_event_links("http://ufcstats.com/statistics/events/upcoming")
+logger.info(f"Found {len(completed_event_links)} completed events, {len(upcoming_event_links)} upcoming events.")
+
+# Filter new completed events
+new_completed_event_links = []
+for link in completed_event_links:
     try:
         event_id = link[-16:]
         if event_id in existing_event_ids:
@@ -89,18 +96,36 @@ for link in event_links:
         event_soup = BeautifulSoup(event_response.text, 'lxml')
         date_loc_list = event_soup.find_all('li', 'b-list__box-list-item')
         date = date_loc_list[0].text.replace("Date:", "").strip()
-        if date > last_date:
-            new_event_links.append(link)
+        if date > last_event_date:
+            new_completed_event_links.append(link)
         time.sleep(2)
     except Exception as e:
-        logger.error(f"Failed to check event {link}: {str(e)}")
+        logger.error(f"Failed to check completed event {link}: {str(e)}")
         continue
 
-logger.info(f"Found {len(new_event_links)} new events.")
+# Filter new upcoming events
+new_upcoming_event_links = []
+for link in upcoming_event_links:
+    try:
+        event_id = link[-16:]
+        if event_id in existing_upcoming_event_ids:
+            continue
+        event_response = session.get(link)
+        event_response.raise_for_status()
+        event_soup = BeautifulSoup(event_response.text, 'lxml')
+        date_loc_list = event_soup.find_all('li', 'b-list__box-list-item')
+        date = date_loc_list[0].text.replace("Date:", "").strip()
+        if date > last_upcoming_event_date:
+            new_upcoming_event_links.append(link)
+        time.sleep(2)
+    except Exception as e:
+        logger.error(f"Failed to check upcoming event {link}: {str(e)}")
+        continue
 
-def get_event_data(item):
+logger.info(f"Found {len(new_completed_event_links)} new completed events, {len(new_upcoming_event_links)} new upcoming events.")
+
+def get_completed_event_data(item):
     idx, link = item
-    link = link.strip()
     try:
         response = session.get(link, headers=HEADER, timeout=15)
         response.raise_for_status()
@@ -116,7 +141,7 @@ def get_event_data(item):
             for i in fight_links:
                 w_l_d = i.find('i', class_="b-flag__text").text
                 fight_id = i['data-link'][-16:]
-                if fight_id in existing_fights.get('fight_id', []).values:
+                if fight_id in existing_fight_ids:
                     continue
                 winner_name = None
                 winner_id = None
@@ -136,14 +161,45 @@ def get_event_data(item):
                     if fight_id not in [d['fight_id'] for d in winner_names]:
                         new_fight_links_all.append(i['data-link'])
                         winner_names.append(data_dic)
-            logger.info(f"Scraped event {idx+1}/{len(new_event_links)}: {link}")
+            logger.info(f"Scraped completed event {idx+1}/{len(new_completed_event_links)}: {link}")
         time.sleep(2)
     except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to retrieve event {link}: {str(e)}")
+        logger.error(f"Failed to retrieve completed event {link}: {str(e)}")
 
-def get_fight_data(item):
+def get_upcoming_event_data(item):
     idx, link = item
-    link = link.strip()
+    try:
+        response = session.get(link, headers=HEADER, timeout=15)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'lxml')
+        event_id = link[-16:]
+        if event_id in existing_upcoming_event_ids:
+            return
+        event_name = soup.find('span', class_='b-content__title-highlight').text.strip()
+        date_loc_list = soup.find_all('li', 'b-list__box-list-item')
+        date = date_loc_list[0].text.replace("Date:", "").strip()
+        location = date_loc_list[1].text.replace("Location:", "").strip()
+        fight_links = soup.find_all('tr', class_='b-fight-details__table-row b-fight-details__table-row__hover js-fight-details-click')
+        with lock:
+            data_dic = {
+                "event_id": event_id,
+                "event_name": event_name,
+                "date": date,
+                "location": location
+            }
+            upcoming_event_details.append(data_dic)
+            for i in fight_links:
+                fight_id = i['data-link'][-16:]
+                if fight_id in existing_upcoming_fight_ids:
+                    continue
+                new_upcoming_fight_links.append(i['data-link'])
+            logger.info(f"Scraped upcoming event {idx+1}/{len(new_upcoming_event_links)}: {link}")
+        time.sleep(2)
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to retrieve upcoming event {link}: {str(e)}")
+
+def get_completed_fight_data(item):
+    idx, link = item
     try:
         response = session.get(link, headers=HEADER, timeout=15)
         response.raise_for_status()
@@ -151,7 +207,7 @@ def get_fight_data(item):
         event_name = soup.find('a', class_="b-link").text.strip()
         event_id = soup.find('a', class_="b-link")['href'][-16:]
         fight_id = link[-16:]
-        if fight_id in existing_fights.get('fight_id', []).values:
+        if fight_id in existing_fight_ids:
             return
         fighter_nams = soup.find_all('a', class_='b-fight-details__person-link')
         r_name = fighter_nams[0].text.strip()
@@ -176,272 +232,214 @@ def get_fight_data(item):
         else:
             total_rounds = int(total_rounds[0])
         referee = fight_details_list[3].text.replace("Referee:", "").strip()
-        winner_name = None
-        winner_id = None
-        event_df = pd.DataFrame(winner_names)
-        if not event_df[event_df['fight_id'] == fight_id].empty:
-            winner_name = event_df[event_df['fight_id'] == fight_id]['winner'].iloc[0]
-            winner_id = event_df[event_df['fight_id'] == fight_id]['winner_id'].iloc[0]
-        tables = soup.find_all('table', style="width: 745px")
-        if len(tables) > 0:
-            table1 = tables[0]
-            td_1_list = table1.find_all('td', class_='b-fight-details__table-col')
-            kd_players = td_1_list[1].text.split()
-            r_kd, b_kd = int(kd_players[0]), int(kd_players[1])
-            sig_str_players = td_1_list[2].text.split()
-            r_sig_str_landed = int(sig_str_players[0])
-            r_sig_str_atmpted = int(sig_str_players[2])
-            b_sig_str_landed = int(sig_str_players[3])
-            b_sig_str_atmpted = int(sig_str_players[5])
-            sig_str_acc = td_1_list[3].text.split()
-            r_sig_str_acc = int(sig_str_acc[0].replace("%", "")) if sig_str_acc[0] != "---" else None
-            b_sig_str_acc = int(sig_str_acc[1].replace("%", "")) if sig_str_acc[1] != "---" else None
-            total_str = td_1_list[4].text.split()
-            r_total_str_landed = int(total_str[0])
-            r_total_str_atmpted = int(total_str[2])
-            b_total_str_landed = int(total_str[3])
-            b_total_str_atmpted = int(total_str[5])
-            r_total_str_acc, b_total_str_acc = None, None
-            try:
-                r_total_str_acc = int(round(r_total_str_landed / r_total_str_atmpted, 2) * 100)
-            except:
-                pass
-            try:
-                b_total_str_acc = int(round(b_total_str_landed / b_total_str_atmpted, 2) * 100)
-            except:
-                pass
-            td_players = td_1_list[5].text.split()
-            r_td_landed = int(td_players[0])
-            r_td_atmpted = int(td_players[2])
-            b_td_landed = int(td_players[3])
-            b_td_atmpted = int(td_players[5])
-            td_acc = td_1_list[6].text.split()
-            r_td_acc = int(td_acc[0].replace("%", "")) if td_acc[0] != "---" else None
-            b_td_acc = int(td_acc[1].replace("%", "")) if td_acc[1] != "---" else None
-            sub_att = td_1_list[7].text.split()
-            r_sub_att, b_sub_att = int(sub_att[0]), int(sub_att[1])
-            rev = td_1_list[8].text.split()
-            r_rev, b_rev = int(rev[0]), int(rev[1])
-            ctrl = td_1_list[9].text.split()
-            r_ctrl = ctrl[0].split(":")
-            r_ctrl = int(r_ctrl[0]) * 60 + int(r_ctrl[1]) if r_ctrl[0] != '--' else None
-            b_ctrl = ctrl[1].split(":")
-            b_ctrl = int(b_ctrl[0]) * 60 + int(b_ctrl[1]) if b_ctrl[0] != '--' else None
-            table2 = tables[1]
-            td_2_list = table2.find_all('td', class_='b-fight-details__table-col')
-            head_list = td_2_list[3].text.split()
-            r_head_landed = int(head_list[0])
-            r_head_atmpted = int(head_list[2])
-            b_head_landed = int(head_list[3])
-            b_head_atmpted = int(head_list[5])
-            r_head_acc, b_head_acc = None, None
-            try:
-                r_head_acc = int(round(r_head_landed / r_head_atmpted, 2) * 100)
-            except:
-                pass
-            try:
-                b_head_acc = int(round(b_head_landed / b_head_atmpted, 2) * 100)
-            except:
-                pass
-            body_list = td_2_list[4].text.split()
-            r_body_landed = int(body_list[0])
-            r_body_atmpted = int(body_list[2])
-            b_body_landed = int(body_list[3])
-            b_body_atmpted = int(body_list[5])
-            r_body_acc, b_body_acc = None, None
-            try:
-                r_body_acc = int(round(r_body_landed / r_body_atmpted, 2) * 100)
-            except:
-                pass
-            try:
-                b_body_acc = int(round(b_body_landed / b_body_atmpted, 2) * 100)
-            except:
-                pass
-            leg_list = td_2_list[5].text.split()
-            r_leg_landed = int(leg_list[0])
-            r_leg_atmpted = int(leg_list[2])
-            b_leg_landed = int(leg_list[3])
-            b_leg_atmpted = int(leg_list[5])
-            r_leg_acc, b_leg_acc = None, None
-            try:
-                r_leg_acc = int(round(r_leg_landed / r_leg_atmpted, 2) * 100)
-            except:
-                pass
-            try:
-                b_leg_acc = int(round(b_leg_landed / b_leg_atmpted, 2) * 100)
-            except:
-                pass
-            dist_list = td_2_list[6].text.split()
-            r_dist_landed = int(dist_list[0])
-            r_dist_atmpted = int(dist_list[2])
-            b_dist_landed = int(dist_list[3])
-            b_dist_atmpted = int(dist_list[5])
-            r_dist_acc, b_dist_acc = None, None
-            try:
-                r_dist_acc = int(round(r_dist_landed / r_dist_atmpted, 2) * 100)
-            except:
-                pass
-            try:
-                b_dist_acc = int(round(b_dist_landed / b_dist_atmpted, 2) * 100)
-            except:
-                pass
-            clinch_list = td_2_list[7].text.split()
-            r_clinch_landed = int(clinch_list[0])
-            r_clinch_atmpted = int(clinch_list[2])
-            b_clinch_landed = int(clinch_list[3])
-            b_clinch_atmpted = int(clinch_list[5])
-            r_clinch_acc, b_clinch_acc = None, None
-            try:
-                r_clinch_acc = int(round(r_clinch_landed / r_clinch_atmpted, 2) * 100)
-            except:
-                pass
-            try:
-                b_clinch_acc = int(round(b_clinch_landed / b_clinch_atmpted, 2) * 100)
-            except:
-                pass
-            ground_list = td_2_list[8].text.split()
-            r_ground_landed = int(ground_list[0])
-            r_ground_atmpted = int(ground_list[2])
-            b_ground_landed = int(ground_list[3])
-            b_ground_atmpted = int(ground_list[5])
-            r_ground_acc, b_ground_acc = None, None
-            try:
-                r_ground_acc = int(round(r_ground_landed / r_ground_atmpted, 2) * 100)
-            except:
-                pass
-            try:
-                b_ground_acc = int(round(b_ground_landed / b_ground_atmpted, 2) * 100)
-            except:
-                pass
-            try:
-                r_landed_head_and_dist_list = soup.find_all('i', class_="b-fight-details__charts-num b-fight-details__charts-num_style_red b-fight-details__charts-num_pos_left js-red")
-                r_landed_head_per = int(r_landed_head_and_dist_list[0].text.strip().replace("%", ""))
-                r_landed_dist_per = int(r_landed_head_and_dist_list[1].text.strip().replace("%", ""))
-                b_landed_head_and_dist_list = soup.find_all('i', class_="b-fight-details__charts-num b-fight-details__charts-num_style_blue b-fight-details__charts-num_pos_right js-blue")
-                b_landed_head_per = int(b_landed_head_and_dist_list[0].text.strip().replace("%", ""))
-                b_landed_dist_per = int(b_landed_head_and_dist_list[1].text.strip().replace("%", ""))
-            except:
-                r_landed_head_per, r_landed_dist_per = None, None
-                b_landed_head_per, b_landed_dist_per = None, None
-            try:
-                r_landed_body_and_clinch_list = soup.find_all('i', class_="b-fight-details__charts-num b-fight-details__charts-num_style_dark-red b-fight-details__charts-num_pos_left js-red")
-                r_landed_body_per = int(r_landed_body_and_clinch_list[0].text.strip().replace("%", ""))
-                r_landed_clinch_per = int(r_landed_body_and_clinch_list[1].text.strip().replace("%", ""))
-                b_landed_body_and_clinch_list = soup.find_all('i', class_="b-fight-details__charts-num b-fight-details__charts-num_style_dark-blue b-fight-details__charts-num_pos_right js-blue")
-                b_landed_body_per = int(b_landed_body_and_clinch_list[0].text.strip().replace("%", ""))
-                b_landed_clinch_per = int(b_landed_body_and_clinch_list[1].text.strip().replace("%", ""))
-            except:
-                r_landed_body_per, r_landed_clinch_per = None, None
-                b_landed_body_per, b_landed_clinch_per = None, None
-            try:
-                r_landed_leg_and_ground_list = soup.find_all('i', class_="b-fight-details__charts-num b-fight-details__charts-num_style_light-red b-fight-details__charts-num_pos_left js-red")
-                r_landed_leg_per = int(r_landed_leg_and_ground_list[0].text.strip().replace("%", ""))
-                r_landed_ground_per = int(r_landed_leg_and_ground_list[1].text.strip().replace("%", ""))
-                b_landed_leg_and_ground_list = soup.find_all('i', class_="b-fight-details__charts-num b-fight-details__charts-num_style_light-blue b-fight-details__charts-num_pos_right js-blue")
-                b_landed_leg_per = int(b_landed_leg_and_ground_list[0].text.strip().replace("%", ""))
-                b_landed_ground_per = int(b_landed_leg_and_ground_list[1].text.strip().replace("%", ""))
-            except:
-                r_landed_leg_per, r_landed_ground_per = None, None
-                b_landed_leg_per, b_landed_ground_per = None, None
-            with lock:
-                data_dic = {
-                    "event_name": event_name,
-                    "event_id": event_id,
-                    "date": date,
-                    "location": location,
-                    "fight_id": fight_id,
-                    "r_name": r_name,
-                    "r_id": r_id,
-                    "b_name": b_name,
-                    "b_id": b_id,
-                    "division": division_info,
-                    "title_fight": is_title_fight,
-                    "method": method,
-                    "finish_round": finish_round,
-                    "match_time_sec": match_time_sec,
-                    "total_rounds": total_rounds,
-                    "referee": referee,
-                    "winner": winner_name,
-                    "winner_id": winner_id,
-                    "r_kd": r_kd,
-                    "r_sig_str_landed": r_sig_str_landed,
-                    "r_sig_str_atmpted": r_sig_str_atmpted,
-                    "r_sig_str_acc": r_sig_str_acc,
-                    "r_total_str_landed": r_total_str_landed,
-                    "r_total_str_atmpted": r_total_str_atmpted,
-                    "r_total_str_acc": r_total_str_acc,
-                    "r_td_landed": r_td_landed,
-                    "r_td_atmpted": r_td_atmpted,
-                    "r_td_acc": r_td_acc,
-                    "r_sub_att": r_sub_att,
-                    "r_ctrl": r_ctrl,
-                    "r_head_landed": r_head_landed,
-                    "r_head_atmpted": r_head_atmpted,
-                    "r_head_acc": r_head_acc,
-                    "r_body_landed": r_body_landed,
-                    "r_body_atmpted": r_body_atmpted,
-                    "r_body_acc": r_body_acc,
-                    "r_leg_landed": r_leg_landed,
-                    "r_leg_atmpted": r_leg_atmpted,
-                    "r_leg_acc": r_leg_acc,
-                    "r_dist_landed": r_dist_landed,
-                    "r_dist_atmpted": r_dist_atmpted,
-                    "r_dist_acc": r_dist_acc,
-                    "r_clinch_landed": r_clinch_landed,
-                    "r_clinch_atmpted": r_clinch_atmpted,
-                    "r_clinch_acc": r_clinch_acc,
-                    "r_ground_landed": r_ground_landed,
-                    "r_ground_atmpted": r_ground_atmpted,
-                    "r_ground_acc": r_ground_acc,
-                    "r_landed_head_per": r_landed_head_per,
-                    "r_landed_body_per": r_landed_body_per,
-                    "r_landed_leg_per": r_landed_leg_per,
-                    "r_landed_dist_per": r_landed_dist_per,
-                    "r_landed_clinch_per": r_landed_clinch_per,
-                    "r_landed_ground_per": r_landed_ground_per,
-                    "b_kd": b_kd,
-                    "b_sig_str_landed": b_sig_str_landed,
-                    "b_sig_str_atmpted": b_sig_str_atmpted,
-                    "b_sig_str_acc": b_sig_str_acc,
-                    "b_total_str_landed": b_total_str_landed,
-                    "b_total_str_atmpted": b_total_str_atmpted,
-                    "b_total_str_acc": b_total_str_acc,
-                    "b_td_landed": b_td_landed,
-                    "b_td_atmpted": b_td_atmpted,
-                    "b_td_acc": b_td_acc,
-                    "b_sub_att": b_sub_att,
-                    "b_ctrl": b_ctrl,
-                    "b_head_landed": b_head_landed,
-                    "b_head_atmpted": b_head_atmpted,
-                    "b_head_acc": b_head_acc,
-                    "b_body_landed": b_body_landed,
-                    "b_body_atmpted": b_body_atmpted,
-                    "b_body_acc": b_body_acc,
-                    "b_leg_landed": b_leg_landed,
-                    "b_leg_atmpted": b_leg_atmpted,
-                    "b_leg_acc": b_leg_acc,
-                    "b_dist_landed": b_dist_landed,
-                    "b_dist_atmpted": b_dist_atmpted,
-                    "b_dist_acc": b_dist_acc,
-                    "b_clinch_landed": b_clinch_landed,
-                    "b_clinch_atmpted": b_clinch_atmpted,
-                    "b_clinch_acc": b_clinch_acc,
-                    "b_ground_landed": b_ground_landed,
-                    "b_ground_atmpted": b_ground_atmpted,
-                    "b_ground_acc": b_ground_acc,
-                    "b_landed_head_per": b_landed_head_per,
-                    "b_landed_body_per": b_landed_body_per,
-                    "b_landed_leg_per": b_landed_leg_per,
-                    "b_landed_dist_per": b_landed_dist_per,
-                    "b_landed_clinch_per": b_landed_clinch_per,
-                    "b_landed_ground_per": b_landed_ground_per
-                }
-                fight_details.append(data_dic)
-                logger.info(f"Scraped fight {idx+1}/{len(new_fight_links_all)}: {link}")
+        fight_stat = soup.find_all('p', class_="b-fight-details__table-text")
+        r_kd = float(fight_stat[2].text.strip())
+        b_kd = float(fight_stat[3].text.strip())
+        r_sig_str_landed = float(fight_stat[4].text.strip().split(" of ")[0])
+        r_sig_str_atmpted = float(fight_stat[4].text.strip().split(" of ")[1])
+        r_sig_str_acc = float(fight_stat[6].text.strip().replace("%", ""))
+        b_sig_str_landed = float(fight_stat[5].text.strip().split(" of ")[0])
+        b_sig_str_atmpted = float(fight_stat[5].text.strip().split(" of ")[1])
+        b_sig_str_acc = float(fight_stat[7].text.strip().replace("%", ""))
+        r_total_str_landed = float(fight_stat[8].text.strip().split(" of ")[0])
+        r_total_str_atmpted = float(fight_stat[8].text.strip().split(" of ")[1])
+        r_total_str_acc = float(fight_stat[10].text.strip().replace("%", ""))
+        b_total_str_landed = float(fight_stat[9].text.strip().split(" of ")[0])
+        b_total_str_atmpted = float(fight_stat[9].text.strip().split(" of ")[1])
+        b_total_str_acc = float(fight_stat[11].text.strip().replace("%", ""))
+        r_td_landed = float(fight_stat[12].text.strip().split(" of ")[0])
+        r_td_atmpted = float(fight_stat[12].text.strip().split(" of ")[1])
+        r_td_acc = float(fight_stat[14].text.strip().replace("%", ""))
+        b_td_landed = float(fight_stat[13].text.strip().split(" of ")[0])
+        b_td_atmpted = float(fight_stat[13].text.strip().split(" of ")[1])
+        b_td_acc = float(fight_stat[15].text.strip().replace("%", ""))
+        r_sub_att = float(fight_stat[16].text.strip())
+        b_sub_att = float(fight_stat[17].text.strip())
+        r_ctrl = fight_stat[20].text.strip()
+        r_ctrl = sum([int(x) * 60 + int(y) for x, y in [r_ctrl.split(":")]]) if ":" in r_ctrl else 0
+        b_ctrl = fight_stat[21].text.strip()
+        b_ctrl = sum([int(x) * 60 + int(y) for x, y in [b_ctrl.split(":")]]) if ":" in b_ctrl else 0
+        r_head_landed = float(fight_stat[22].text.strip().split(" of ")[0])
+        r_head_atmpted = float(fight_stat[22].text.strip().split(" of ")[1])
+        r_head_acc = float(fight_stat[24].text.strip().replace("%", ""))
+        b_head_landed = float(fight_stat[23].text.strip().split(" of ")[0])
+        b_head_atmpted = float(fight_stat[23].text.strip().split(" of ")[1])
+        b_head_acc = float(fight_stat[25].text.strip().replace("%", ""))
+        r_body_landed = float(fight_stat[26].text.strip().split(" of ")[0])
+        r_body_atmpted = float(fight_stat[26].text.strip().split(" of ")[1])
+        r_body_acc = float(fight_stat[28].text.strip().replace("%", ""))
+        b_body_landed = float(fight_stat[27].text.strip().split(" of ")[0])
+        b_body_atmpted = float(fight_stat[27].text.strip().split(" of ")[1])
+        b_body_acc = float(fight_stat[29].text.strip().replace("%", ""))
+        r_leg_landed = float(fight_stat[30].text.strip().split(" of ")[0])
+        r_leg_atmpted = float(fight_stat[30].text.strip().split(" of ")[1])
+        r_leg_acc = float(fight_stat[32].text.strip().replace("%", ""))
+        b_leg_landed = float(fight_stat[31].text.strip().split(" of ")[0])
+        b_leg_atmpted = float(fight_stat[31].text.strip().split(" of ")[1])
+        b_leg_acc = float(fight_stat[33].text.strip().replace("%", ""))
+        r_dist_landed = float(fight_stat[34].text.strip().split(" of ")[0])
+        r_dist_atmpted = float(fight_stat[34].text.strip().split(" of ")[1])
+        r_dist_acc = float(fight_stat[36].text.strip().replace("%", ""))
+        b_dist_landed = float(fight_stat[35].text.strip().split(" of ")[0])
+        b_dist_atmpted = float(fight_stat[35].text.strip().split(" of ")[1])
+        b_dist_acc = float(fight_stat[37].text.strip().replace("%", ""))
+        r_clinch_landed = float(fight_stat[38].text.strip().split(" of ")[0])
+        r_clinch_atmpted = float(fight_stat[38].text.strip().split(" of ")[1])
+        r_clinch_acc = float(fight_stat[40].text.strip().replace("%", ""))
+        b_clinch_landed = float(fight_stat[39].text.strip().split(" of ")[0])
+        b_clinch_atmpted = float(fight_stat[39].text.strip().split(" of ")[1])
+        b_clinch_acc = float(fight_stat[41].text.strip().replace("%", ""))
+        r_ground_landed = float(fight_stat[42].text.strip().split(" of ")[0])
+        r_ground_atmpted = float(fight_stat[42].text.strip().split(" of ")[1])
+        r_ground_acc = float(fight_stat[44].text.strip().replace("%", ""))
+        b_ground_landed = float(fight_stat[43].text.strip().split(" of ")[0])
+        b_ground_atmpted = float(fight_stat[43].text.strip().split(" of ")[1])
+        b_ground_acc = float(fight_stat[45].text.strip().replace("%", ""))
+        r_landed_head_per = float(fight_stat[46].text.strip().replace("%", ""))
+        r_landed_body_per = float(fight_stat[48].text.strip().replace("%", ""))
+        r_landed_leg_per = float(fight_stat[50].text.strip().replace("%", ""))
+        r_landed_dist_per = float(fight_stat[52].text.strip().replace("%", ""))
+        r_landed_clinch_per = float(fight_stat[54].text.strip().replace("%", ""))
+        r_landed_ground_per = float(fight_stat[56].text.strip().replace("%", ""))
+        b_landed_head_per = float(fight_stat[47].text.strip().replace("%", ""))
+        b_landed_body_per = float(fight_stat[49].text.strip().replace("%", ""))
+        b_landed_leg_per = float(fight_stat[51].text.strip().replace("%", ""))
+        b_landed_dist_per = float(fight_stat[53].text.strip().replace("%", ""))
+        b_landed_clinch_per = float(fight_stat[55].text.strip().replace("%", ""))
+        b_landed_ground_per = float(fight_stat[57].text.strip().replace("%", ""))
+        with lock:
+            data_dic = {
+                "event_name": event_name,
+                "event_id": event_id,
+                "fight_id": fight_id,
+                "r_name": r_name,
+                "r_id": r_id,
+                "b_name": b_name,
+                "b_id": b_id,
+                "division": division_info,
+                "title_fight": is_title_fight,
+                "method": method,
+                "finish_round": finish_round,
+                "match_time_sec": match_time_sec,
+                "total_rounds": total_rounds,
+                "referee": referee,
+                "r_kd": r_kd,
+                "r_sig_str_landed": r_sig_str_landed,
+                "r_sig_str_atmpted": r_sig_str_atmpted,
+                "r_sig_str_acc": r_sig_str_acc,
+                "r_total_str_landed": r_total_str_landed,
+                "r_total_str_atmpted": r_total_str_atmpted,
+                "r_total_str_acc": r_total_str_acc,
+                "r_td_landed": r_td_landed,
+                "r_td_atmpted": r_td_atmpted,
+                "r_td_acc": r_td_acc,
+                "r_sub_att": r_sub_att,
+                "r_ctrl": r_ctrl,
+                "r_head_landed": r_head_landed,
+                "r_head_atmpted": r_head_atmpted,
+                "r_head_acc": r_head_acc,
+                "r_body_landed": r_body_landed,
+                "r_body_atmpted": r_body_atmpted,
+                "r_body_acc": r_body_acc,
+                "r_leg_landed": r_leg_landed,
+                "r_leg_atmpted": r_leg_atmpted,
+                "r_leg_acc": r_leg_acc,
+                "r_dist_landed": r_dist_landed,
+                "r_dist_atmpted": r_dist_atmpted,
+                "r_dist_acc": r_dist_acc,
+                "r_clinch_landed": r_clinch_landed,
+                "r_clinch_atmpted": r_clinch_atmpted,
+                "r_clinch_acc": r_clinch_acc,
+                "r_ground_landed": r_ground_landed,
+                "r_ground_atmpted": r_ground_atmpted,
+                "r_ground_acc": r_ground_acc,
+                "r_landed_head_per": r_landed_head_per,
+                "r_landed_body_per": r_landed_body_per,
+                "r_landed_leg_per": r_landed_leg_per,
+                "r_landed_dist_per": r_landed_dist_per,
+                "r_landed_clinch_per": r_landed_clinch_per,
+                "r_landed_ground_per": r_landed_ground_per,
+                "b_kd": b_kd,
+                "b_sig_str_landed": b_sig_str_landed,
+                "b_sig_str_atmpted": b_sig_str_atmpted,
+                "b_sig_str_acc": b_sig_str_acc,
+                "b_total_str_landed": b_total_str_landed,
+                "b_total_str_atmpted": b_total_str_atmpted,
+                "b_total_str_acc": b_total_str_acc,
+                "b_td_landed": b_td_landed,
+                "b_td_atmpted": b_td_atmpted,
+                "b_td_acc": b_td_acc,
+                "b_sub_att": b_sub_att,
+                "b_ctrl": b_ctrl,
+                "b_head_landed": b_head_landed,
+                "b_head_atmpted": b_head_atmpted,
+                "b_head_acc": b_head_acc,
+                "b_body_landed": b_body_landed,
+                "b_body_atmpted": b_body_atmpted,
+                "b_body_acc": b_body_acc,
+                "b_leg_landed": b_leg_landed,
+                "b_leg_atmpted": b_leg_atmpted,
+                "b_leg_acc": b_leg_acc,
+                "b_dist_landed": b_dist_landed,
+                "b_dist_atmpted": b_dist_atmpted,
+                "b_dist_acc": b_dist_acc,
+                "b_clinch_landed": b_clinch_landed,
+                "b_clinch_atmpted": b_clinch_atmpted,
+                "b_clinch_acc": b_clinch_acc,
+                "b_ground_landed": b_ground_landed,
+                "b_ground_atmpted": b_ground_atmpted,
+                "b_ground_acc": b_ground_acc,
+                "b_landed_head_per": b_landed_head_per,
+                "b_landed_body_per": b_landed_body_per,
+                "b_landed_leg_per": b_landed_leg_per,
+                "b_landed_dist_per": b_landed_dist_per,
+                "b_landed_clinch_per": b_landed_clinch_per,
+                "b_landed_ground_per": b_landed_ground_per
+            }
+            fight_details.append(data_dic)
+            logger.info(f"Scraped completed fight {idx+1}/{len(new_fight_links_all)}: {link}")
         time.sleep(2)
     except requests.exceptions.RequestException as e:
-        logger.error(f"Failed fight {idx+1}/{len(new_fight_links_all)}: {link} - {str(e)}")
-        return
+        logger.error(f"Failed completed fight {idx+1}/{len(new_fight_links_all)}: {link} - {str(e)}")
+
+def get_upcoming_fight_data(item):
+    idx, link = item
+    try:
+        response = session.get(link, headers=HEADER, timeout=15)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'lxml')
+        event_name = soup.find('a', class_="b-link").text.strip()
+        event_id = soup.find('a', class_="b-link")['href'][-16:]
+        fight_id = link[-16:]
+        if fight_id in existing_upcoming_fight_ids:
+            return
+        fighter_nams = soup.find_all('a', class_='b-fight-details__person-link')
+        r_name = fighter_nams[0].text.strip()
+        b_name = fighter_nams[1].text.strip()
+        r_id = fighter_nams[0]['href'].strip()[-16:]
+        b_id = fighter_nams[1]['href'].strip()[-16:]
+        division_info = soup.find('i', class_='b-fight-details__fight-title').text.lower()
+        is_title_fight = 0
+        if 'title' in division_info:
+            is_title_fight = 1
+        division_info = division_info.replace('ufc', "").replace("title", "").replace("bout", "").strip()
+        with lock:
+            data_dic = {
+                "event_name": event_name,
+                "event_id": event_id,
+                "fight_id": fight_id,
+                "r_name": r_name,
+                "r_id": r_id,
+                "b_name": b_name,
+                "b_id": b_id,
+                "division": division_info,
+                "title_fight": is_title_fight
+            }
+            upcoming_fight_details.append(data_dic)
+            logger.info(f"Scraped upcoming fight {idx+1}/{len(new_upcoming_fight_links)}: {link}")
+        time.sleep(2)
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed upcoming fight {idx+1}/{len(new_upcoming_fight_links)}: {link} - {str(e)}")
 
 def get_fighter_data(item):
     idx, id = item
@@ -517,39 +515,50 @@ def get_fighter_data(item):
         time.sleep(2)
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed fighter {idx+1}/{len(all_ids)}: {id} - {str(e)}")
-        return
 
 # Run event and fight scraping
 with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-    results = [executor.submit(get_event_data, item) for item in enumerate(new_event_links)]
+    results = [executor.submit(get_completed_event_data, item) for item in enumerate(new_completed_event_links)]
     for r in results:
         r.result()
 
 with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-    results = [executor.submit(get_fight_data, item) for item in enumerate(new_fight_links_all)]
+    results = [executor.submit(get_upcoming_event_data, item) for item in enumerate(new_upcoming_event_links)]
+    for r in results:
+        r.result()
+
+with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
+    results = [executor.submit(get_completed_fight_data, item) for item in enumerate(new_fight_links_all)]
+    for r in results:
+        r.result()
+
+with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
+    results = [executor.submit(get_upcoming_fight_data, item) for item in enumerate(new_upcoming_fight_links)]
     for r in results:
         r.result()
 
 # Scrape fighter data
-if fight_details:  # Only process fighters if new fights were scraped
-    r_fighter_id = pd.DataFrame(fight_details)['r_id'].unique()
-    b_fighter_id = pd.DataFrame(fight_details)['b_id'].unique()
-    all_ids = list(set(list(r_fighter_id) + list(b_fighter_id)))
+if fight_details or upcoming_fight_details:
+    r_fighter_id = pd.DataFrame(fight_details).get('r_id', []).unique()
+    b_fighter_id = pd.DataFrame(fight_details).get('b_id', []).unique()
+    r_upcoming_fighter_id = pd.DataFrame(upcoming_fight_details).get('r_id', []).unique()
+    b_upcoming_fighter_id = pd.DataFrame(upcoming_fight_details).get('b_id', []).unique()
+    all_ids = list(set(list(r_fighter_id) + list(b_fighter_id) + list(r_upcoming_fighter_id) + list(b_upcoming_fighter_id)))
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         results = [executor.submit(get_fighter_data, item) for item in enumerate(all_ids)]
         for r in results:
             r.result()
 else:
-    logger.info("No new fights scraped. Skipping fighter data collection.")
+    logger.info("No new completed or upcoming fights scraped. Skipping fighter data collection.")
 
-# Append new data to existing CSVs
+# Append new data to CSVs
 if winner_names:
     df_winner = pd.DataFrame(data=winner_names)
     if not existing_events.empty:
         df_winner = pd.concat([existing_events, df_winner]).drop_duplicates(subset=['event_id', 'fight_id'], keep='last')
     df_winner.to_csv("data/event_details.csv", index=False)
 else:
-    logger.info("No new events to save.")
+    logger.info("No new completed events to save.")
 
 if fight_details:
     df_fight = pd.DataFrame(data=fight_details)
@@ -558,7 +567,23 @@ if fight_details:
         df_fight = pd.concat([existing_fights, df_fight]).drop_duplicates(subset=['fight_id'], keep='last')
     df_fight.to_csv("data/fight_details.csv", index=False)
 else:
-    logger.info("No new fights to save.")
+    logger.info("No new completed fights to save.")
+
+if upcoming_event_details:
+    df_upcoming_event = pd.DataFrame(data=upcoming_event_details)
+    if not existing_upcoming_events.empty:
+        df_upcoming_event = pd.concat([existing_upcoming_events, df_upcoming_event]).drop_duplicates(subset=['event_id'], keep='last')
+    df_upcoming_event.to_csv("data/upcoming_event_details.csv", index=False)
+else:
+    logger.info("No new upcoming events to save.")
+
+if upcoming_fight_details:
+    df_upcoming_fight = pd.DataFrame(data=upcoming_fight_details)
+    if not existing_upcoming_fights.empty:
+        df_upcoming_fight = pd.concat([existing_upcoming_fights, df_upcoming_fight]).drop_duplicates(subset=['fight_id'], keep='last')
+    df_upcoming_fight.to_csv("data/upcoming_fight_details.csv", index=False)
+else:
+    logger.info("No new upcoming fights to save.")
 
 if fighter_detail_data:
     df_fighter = pd.DataFrame(data=fighter_detail_data)
@@ -568,5 +593,5 @@ if fighter_detail_data:
 else:
     logger.info("No new fighters to save.")
 
-logger.info(f"Core scraper complete. Updated {len(fight_details)} fights, {len(fighter_detail_data)} fighters.")
-print(f"Core scraper complete. Updated {len(fight_details)} fights, {len(fighter_detail_data)} fighters.")
+logger.info(f"Core scraper complete. Updated {len(fight_details)} completed fights, {len(upcoming_fight_details)} upcoming fights, {len(fighter_detail_data)} fighters.")
+print(f"Core scraper complete. Updated {len(fight_details)} completed fights, {len(upcoming_fight_details)} upcoming fights, {len(fighter_detail_data)} fighters.")
