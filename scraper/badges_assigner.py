@@ -51,7 +51,7 @@ def assign_badges():
             sapm = row['sapm'] if pd.notnull(row['sapm']) else 0
             kd_received_avg = row['kd_received_avg'] if pd.notnull(row['kd_received_avg']) else 0
             ko_loss_rate = row['ko_loss_rate'] if pd.notnull(row['ko_loss_rate']) else 0
-            sub_att_received = row['sub_att_received'] if pd.notnull(row['sub_att_received']) else 0
+            sub_att_received_avg = row['sub_att_received_avg'] if pd.notnull(row['sub_att_received_avg']) else 0
             sub_def = row['sub_def'] if pd.notnull(row['sub_def']) else 0
             never_submitted = row['never_submitted'] if pd.notnull(row['never_submitted']) else 0
             total_fight_time_sec = row['total_fight_time_sec'] if pd.notnull(row['total_fight_time_sec']) else 0
@@ -79,7 +79,7 @@ def assign_badges():
                 if (ground_finish_rate > 55) and (ground_landed_per_tko > 15) and (ctrl_avg > 150) and (total_fights >= 5) and (ko_tko_wins > 0):
                     fighter_badges.append('Doughmaker')
                     doughmaker_count += 1
-                if ((leg_landed_avg > 24.4) or (body_landed_avg > 25)) and (leg_landed_avg + body_landed_avg > 50) and (ko_tko_wins > 2) and (total_fights >= 5):
+                if ((leg_landed_avg > 24.5) or (body_landed_avg > 25)) and (leg_landed_avg + body_landed_avg > 50) and (ko_tko_wins > 2) and (total_fights >= 5):
                     fighter_badges.append('Kickin’ Pot Pie')
                     kickin_pot_pie_count += 1
             if (td_def > 82) and (td_attempts_received_avg < 10):
@@ -91,7 +91,7 @@ def assign_badges():
             if (kd_received_avg < 0.15) and (ko_loss_rate < 4) and (total_fights >= 5):
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
-            if (sub_att_received < 16) and (never_submitted == 1) and (total_fights >= 5):
+            if (sub_att_received_avg * total_fights < 16) and (never_submitted == 1) and (total_fights >= 8):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
             if (total_fights >= 5) and (total_fight_time_sec / total_fights > 160) and (sig_str_landed_per_sec > 0.23):
