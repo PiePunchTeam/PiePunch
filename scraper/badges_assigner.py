@@ -105,10 +105,10 @@ def assign_badges():
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
                 logger.info(f"Iron Chin awarded to fighter {fid}: kd_received_avg={kd_received_avg}, ko_loss_rate={ko_loss_rate}, total_fights={total_fights}")
-            if (sub_att_received_avg < 0.7) and ((sub_def > 80) or (sub_att_received_avg == 0)) and (never_submitted == 1):
+            if (sub_att_received_avg < 0.7) and ((sub_def > 85) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 10):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
-                logger.info(f"Locksmith awarded to fighter {fid}: sub_att_received_avg={sub_att_received_avg}, sub_def={sub_def}, never_submitted={never_submitted}")
+                logger.info(f"Locksmith awarded to fighter {fid}: sub_att_received_avg={sub_att_received_avg}, sub_def={sub_def}, never_submitted={never_submitted}, total_fights={total_fights}")
             if total_fights > 0 and (total_fight_time_sec / total_fights > 450) and (sig_str_landed_per_sec > 0.3):
                 fighter_badges.append('The Dogwalker')
             if (five_round_fights >= 2) and (five_round_win_rate > 60) and (five_round_decision_rate > 40) and (five_round_wins >= 1):
