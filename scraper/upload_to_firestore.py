@@ -30,16 +30,26 @@ def upload_to_firestore():
             updated_count = 0
             new_count = 0
             
+            if collection_name == 'events':
+                # Aggregate event_details.csv by event_id
+                df = df.groupby('event_id').agg({
+                    'date': 'first',
+                    'location': 'first',
+                    'fight_id': lambda x: list(x),
+                    'winner': lambda x: list(x),
+                    'winner_id': lambda x: list(x)
+                }).reset_index()
+            
             # Upload each row as a document
             for _, row in df.iterrows():
                 doc_id = str(row[id_field])
                 doc_data = row.to_dict()
-                # Handle badges: convert to list if string, else empty list
+                # Handle badges for fighters
                 if 'badges' in doc_data and isinstance(doc_data['badges'], str) and doc_data['badges']:
                     doc_data['badges'] = doc_data['badges'].split(',')
                 else:
                     doc_data['badges'] = []
-                # Convert NaN values to None for Firestore compatibility
+                # Convert NaN values to None
                 for key, value in doc_data.items():
                     if isinstance(value, float) and np.isnan(value):
                         doc_data[key] = None
@@ -49,19 +59,23 @@ def upload_to_firestore():
                 existing_doc = doc_ref.get()
                 
                 if existing_doc.exists:
-                    # Compare existing data with new data
                     existing_data = existing_doc.to_dict()
                     # Convert badges to list for comparison
                     if 'badges' in existing_data and isinstance(existing_data['badges'], str):
                         existing_data['badges'] = existing_data['badges'].split(',') if existing_data['badges'] else []
+                    # For events, ensure lists are compared correctly
+                    if collection_name == 'events':
+                        for key in ['fight_id', 'winner', 'winner_id']:
+                            if key in existing_data and isinstance(existing_data[key], str):
+                                existing_data[key] = [existing_data[key]] if existing_data[key] else []
                     if existing_data == doc_data:
-                        continue  # Skip if data is unchanged
+                        continue  # Skip unchanged
                     else:
-                        doc_ref.set(doc_data)  # Update changed document
+                        doc_ref.set(doc_data)  # Update changed
                         updated_count += 1
                         print(f"Updated document {doc_id} in collection {collection_name}")
                 else:
-                    doc_ref.set(doc_data)  # Add new document
+                    doc_ref.set(doc_data)  # Add new
                     new_count += 1
                     print(f"Added new document {doc_id} to collection {collection_name}")
             
