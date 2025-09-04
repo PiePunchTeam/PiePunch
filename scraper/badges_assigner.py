@@ -1,22 +1,15 @@
 import pandas as pd
-import logging
 import os
 import csv
-
-logging.basicConfig(filename='badges_log.txt', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger('badges_assigner')
 
 def assign_badges():
     try:
         file_path = 'data/fighters_stats.csv'
         abs_file_path = os.path.abspath(file_path)
         if not os.path.exists(abs_file_path):
-            logger.error(f"File not found: {abs_file_path}")
             raise FileNotFoundError(f"File not found: {abs_file_path}")
         
-        logger.info(f"Loading file: {abs_file_path}")
         fighters_df = pd.read_csv(file_path)
-        logger.info(f"Loaded columns: {list(fighters_df.columns)}")
         
         badges = []
         bakers_dozen_count = 0
@@ -74,75 +67,50 @@ def assign_badges():
                 if (ko_tko_ratio > 0.22) and (strikes_attempted > 0 and kd / strikes_attempted > 0.0018) and (splm < 7.0):
                     fighter_badges.append('KO Creamer')
                     ko_creamer_count += 1
-                    logger.info(f"KO Creamer awarded to fighter {fid}: ko_tko_ratio={ko_tko_ratio}, kd_per_strike={kd / strikes_attempted}, splm={splm}")
                 if (splm > 4.0) and (splm_std < 45.0) and (total_fights >= 10):
                     fighter_badges.append('Bakers Dozen')
                     bakers_dozen_count += 1
-                    logger.info(f"Bakers Dozen awarded to fighter {fid}: splm={splm}, splm_std={splm_std}, total_fights={total_fights}")
                 if (td_avg > 2.3) and (career_td_acc > 38) and (ctrl_avg > 180) and (total_fights >= 5):
                     fighter_badges.append('Russian Bear')
                     russian_bear_count += 1
-                    logger.info(f"Russian Bear awarded to fighter {fid}: td_avg={td_avg}, career_td_acc={career_td_acc}, ctrl_avg={ctrl_avg}, total_fights={total_fights}")
-                if (sub_wins_ratio > 0.1) and (sub_att / total_fights > 0.4) and (total_fights >= 5):
+                if (sub_wins_ratio > 0.12) and (sub_att / total_fights > 0.45) and (total_fights >= 5):
                     fighter_badges.append('Pie-thon')
                     pie_thon_count += 1
-                    logger.info(f"Pie-thon awarded to fighter {fid}: sub_wins_ratio={sub_wins_ratio}, sub_att_per_fight={sub_att / total_fights}, total_fights={total_fights}")
                 if (ground_finish_rate > 55) and (ground_landed_per_tko > 15) and (ctrl_avg > 150) and (total_fights >= 5) and (ko_tko_wins > 0):
                     fighter_badges.append('Doughmaker')
                     doughmaker_count += 1
-                    logger.info(f"Doughmaker awarded to fighter {fid}: ground_finish_rate={ground_finish_rate}, ground_landed_per_tko={ground_landed_per_tko}, ctrl_avg={ctrl_avg}, total_fights={total_fights}, ko_tko_wins={ko_tko_wins}")
                 if ((leg_landed_avg > 20) or (body_landed_avg > 25)) and (leg_landed_avg + body_landed_avg > 50) and (ko_tko_wins > 2) and (total_fights >= 10):
                     fighter_badges.append('Kickin’ Pot Pie')
                     kickin_pot_pie_count += 1
-                    logger.info(f"Kickin’ Pot Pie awarded to fighter {fid}: leg_landed_avg={leg_landed_avg}, body_landed_avg={body_landed_avg}, total_landed={leg_landed_avg + body_landed_avg}, ko_tko_wins={ko_tko_wins}, total_fights={total_fights}")
             if (td_def > 82) and (td_attempts_received_avg < 10):
                 fighter_badges.append('Greasy')
                 greasy_count += 1
-                logger.info(f"Greasy awarded to fighter {fid}: td_def={td_def}, td_attempts_received_avg={td_attempts_received_avg}")
             if (str_def > 55) and (sapm < 3.3) and (total_fights >= 10):
                 fighter_badges.append('Can’t Touch This')
                 cant_touch_this_count += 1
-                logger.info(f"Can’t Touch This awarded to fighter {fid}: str_def={str_def}, sapm={sapm}, total_fights={total_fights}")
             if (kd_received_avg < 0.55) and (ko_loss_rate < 12) and (total_fights >= 10):
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
-                logger.info(f"Iron Chin awarded to fighter {fid}: kd_received_avg={kd_received_avg}, ko_loss_rate={ko_loss_rate}, total_fights={total_fights}")
-            if (sub_att_received_avg < 0.9) and ((sub_def > 75) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 10):
+            if (sub_att_received_avg < 1.0) and ((sub_def > 70) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 10):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
-                logger.info(f"Locksmith awarded to fighter {fid}: sub_att_received_avg={sub_att_received_avg}, sub_def={sub_def}, never_submitted={never_submitted}, total_fights={total_fights}")
             if (total_fights >= 10) and (total_fight_time_sec / total_fights > 150) and (sig_str_landed_per_sec > 0.2):
                 fighter_badges.append('The Dogwalker')
                 dogwalker_count += 1
-                logger.info(f"The Dogwalker awarded to fighter {fid}: total_fight_time_avg={total_fight_time_sec / total_fights}, sig_str_landed_per_sec={sig_str_landed_per_sec}, total_fights={total_fights}")
-            if (five_round_fights >= 1) and (five_round_win_rate > 30) and (five_round_decision_rate > 10) and (five_round_wins >= 1):
+            if (five_round_fights >= 1) and (five_round_win_rate > 25) and (five_round_decision_rate > 5) and (five_round_wins >= 1):
                 fighter_badges.append('Champ Rounds')
                 champ_rounds_count += 1
-                logger.info(f"Champ Rounds awarded to fighter {fid}: five_round_fights={five_round_fights}, five_round_win_rate={five_round_win_rate}, five_round_decision_rate={five_round_decision_rate}, five_round_wins={five_round_wins}")
 
             badges.append({
                 'id': fid,
                 'badges': ','.join(fighter_badges) if fighter_badges else None
             })
 
-        logger.info(f"Total KO Creamer badges awarded: {ko_creamer_count}")
-        logger.info(f"Total Bakers Dozen badges awarded: {bakers_dozen_count}")
-        logger.info(f"Total Russian Bear badges awarded: {russian_bear_count}")
-        logger.info(f"Total Pie-thon badges awarded: {pie_thon_count}")
-        logger.info(f"Total Doughmaker badges awarded: {doughmaker_count}")
-        logger.info(f"Total Kickin’ Pot Pie badges awarded: {kickin_pot_pie_count}")
-        logger.info(f"Total Greasy badges awarded: {greasy_count}")
-        logger.info(f"Total Can’t Touch This badges awarded: {cant_touch_this_count}")
-        logger.info(f"Total Iron Chin badges awarded: {iron_chin_count}")
-        logger.info(f"Total Locksmith badges awarded: {locksmith_count}")
-        logger.info(f"Total The Dogwalker badges awarded: {dogwalker_count}")
-        logger.info(f"Total Champ Rounds badges awarded: {champ_rounds_count}")
         df = pd.DataFrame(badges)
         df.to_csv('data/badges.csv', quoting=csv.QUOTE_ALL, index=False)
-        logger.info(f"Generated badges.csv for {len(fighters_df)} fighters.")
         print(f"Generated badges.csv for {len(fighters_df)} fighters.")
     except Exception as e:
-        logger.error(f"Failed to assign badges: {str(e)}")
+        print(f"Failed to assign badges: {str(e)}")
         raise
 
 if __name__ == '__main__':
