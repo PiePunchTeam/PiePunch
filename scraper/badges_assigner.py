@@ -83,7 +83,7 @@ def assign_badges():
                     fighter_badges.append('Russian Bear')
                     russian_bear_count += 1
                     logger.info(f"Russian Bear awarded to fighter {fid}: td_avg={td_avg}, career_td_acc={career_td_acc}, ctrl_avg={ctrl_avg}, total_fights={total_fights}")
-                if (sub_wins_ratio > 0.12) and (sub_att / total_fights > 0.4) and (total_fights >= 5):
+                if (sub_wins_ratio > 0.15) and (sub_att / total_fights > 0.5) and (total_fights >= 5):
                     fighter_badges.append('Pie-thon')
                     pie_thon_count += 1
                     logger.info(f"Pie-thon awarded to fighter {fid}: sub_wins_ratio={sub_wins_ratio}, sub_att_per_fight={sub_att / total_fights}, total_fights={total_fights}")
@@ -107,11 +107,11 @@ def assign_badges():
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
                 logger.info(f"Iron Chin awarded to fighter {fid}: kd_received_avg={kd_received_avg}, ko_loss_rate={ko_loss_rate}, total_fights={total_fights}")
-            if (sub_att_received_avg < 0.7) and ((sub_def > 85) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 10):
+            if (sub_att_received_avg < 0.8) and ((sub_def > 80) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 10):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
                 logger.info(f"Locksmith awarded to fighter {fid}: sub_att_received_avg={sub_att_received_avg}, sub_def={sub_def}, never_submitted={never_submitted}, total_fights={total_fights}")
-            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 250) and (sig_str_landed_per_sec > 0.15):
+            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 150) and (sig_str_landed_per_sec > 0.15):
                 fighter_badges.append('The Dogwalker')
                 dogwalker_count += 1
                 logger.info(f"The Dogwalker awarded to fighter {fid}: total_fight_time_avg={total_fight_time_sec / total_fights}, sig_str_landed_per_sec={sig_str_landed_per_sec}, total_fights={total_fights}")
