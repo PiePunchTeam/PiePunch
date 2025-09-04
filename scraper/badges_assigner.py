@@ -67,13 +67,13 @@ def assign_badges():
                 if (ko_tko_ratio > 0.22) and (strikes_attempted > 0 and kd / strikes_attempted > 0.0018) and (splm < 7.0):
                     fighter_badges.append('KO Creamer')
                     ko_creamer_count += 1
-                if (splm > 4.0) and (splm_std < 45.0) and (total_fights >= 5):
+                if (splm > 4.5) and (splm_std < 40.0) and (total_fights >= 5):
                     fighter_badges.append('Bakers Dozen')
                     bakers_dozen_count += 1
                 if (td_avg > 2.3) and (career_td_acc > 38) and (ctrl_avg > 180) and (total_fights >= 5):
                     fighter_badges.append('Russian Bear')
                     russian_bear_count += 1
-                if (sub_wins_ratio > 0.12) and (sub_att / total_fights > 0.45) and (total_fights >= 5):
+                if (sub_wins_ratio > 0.15) and (sub_att / total_fights > 0.5) and (total_fights >= 5):
                     fighter_badges.append('Pie-thon')
                     pie_thon_count += 1
                 if (ground_finish_rate > 55) and (ground_landed_per_tko > 15) and (ctrl_avg > 150) and (total_fights >= 5) and (ko_tko_wins > 0):
@@ -85,16 +85,16 @@ def assign_badges():
             if (td_def > 82) and (td_attempts_received_avg < 10):
                 fighter_badges.append('Greasy')
                 greasy_count += 1
-            if (str_def > 55) and (sapm < 3.3) and (total_fights >= 5):
+            if (str_def > 60) and (sapm < 3.0) and (total_fights >= 5):
                 fighter_badges.append('Can’t Touch This')
                 cant_touch_this_count += 1
-            if (kd_received_avg < 0.55) and (ko_loss_rate < 12) and (total_fights >= 5):
+            if (kd_received_avg < 0.4) and (ko_loss_rate < 10) and (total_fights >= 5):
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
-            if (sub_att_received_avg < 1.1) and ((sub_def > 65) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 5):
+            if (sub_att_received_avg < 0.8) and ((sub_def > 80) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 5):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
-            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 150) and (sig_str_landed_per_sec > 0.2):
+            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 150) and (sig_str_landed_per_sec > 0.22):
                 fighter_badges.append('The Dogwalker')
                 dogwalker_count += 1
             if (five_round_fights >= 1) and (five_round_win_rate > 25) and (five_round_decision_rate > 5) and (five_round_wins >= 1):
