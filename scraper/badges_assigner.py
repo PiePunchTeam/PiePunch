@@ -91,7 +91,7 @@ def assign_badges():
             if (kd_received_avg < 0.15) and (ko_loss_rate < 4) and (total_fights >= 5):
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
-            if (sub_att_received_avg * total_fights >= 0) and (sub_att_received_avg * total_fights <= 18) and (never_submitted == 1) and (total_fights >= 10):
+            if (sub_att_received_avg * total_fights >= 3) and (sub_att_received_avg * total_fights <= 18) and (never_submitted == 1) and (total_fights >= 10):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
             if (total_fights >= 5) and (total_fight_time_sec / total_fights > 160) and (sig_str_landed_per_sec > 0.23):
