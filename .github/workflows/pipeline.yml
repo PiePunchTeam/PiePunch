@@ -2,7 +2,9 @@ name: Ultimate Fight Hub Pipeline
 
 on:
   schedule:
-    - cron: '0 18 * * 2' # Run weekly on Tuesdays at 18:00 UTC (12:00 PM CST)
+    - cron: '0 13 * * 0' # Sunday 7:00 AM CST (13:00 UTC)
+    - cron: '0 13 * * 3' # Wednesday 7:00 AM CST (13:00 UTC)
+    - cron: '0 22 * * 5' # Friday 4:00 PM CST (22:00 UTC)
   push:
     branches:
       - main
