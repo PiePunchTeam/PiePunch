@@ -539,10 +539,12 @@ with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
 
 # Scrape fighter data
 if fight_details or upcoming_fight_details:
-    r_fighter_id = pd.DataFrame(fight_details).get('r_id', []).unique()
-    b_fighter_id = pd.DataFrame(fight_details).get('b_id', []).unique()
-    r_upcoming_fighter_id = pd.DataFrame(upcoming_fight_details).get('r_id', []).unique()
-    b_upcoming_fighter_id = pd.DataFrame(upcoming_fight_details).get('b_id', []).unique()
+    fight_details_df = pd.DataFrame(fight_details)
+    upcoming_fight_details_df = pd.DataFrame(upcoming_fight_details)
+    r_fighter_id = fight_details_df['r_id'].unique() if 'r_id' in fight_details_df else []
+    b_fighter_id = fight_details_df['b_id'].unique() if 'b_id' in fight_details_df else []
+    r_upcoming_fighter_id = upcoming_fight_details_df['r_id'].unique() if 'r_id' in upcoming_fight_details_df else []
+    b_upcoming_fighter_id = upcoming_fight_details_df['b_id'].unique() if 'b_id' in upcoming_fight_details_df else []
     all_ids = list(set(list(r_fighter_id) + list(b_fighter_id) + list(r_upcoming_fighter_id) + list(b_upcoming_fighter_id)))
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         results = [executor.submit(get_fighter_data, item) for item in enumerate(all_ids)]
