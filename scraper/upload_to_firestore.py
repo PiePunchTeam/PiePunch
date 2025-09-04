@@ -2,6 +2,7 @@ import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, firestore
 import os
+import numpy as np
 
 def upload_to_firestore():
     try:
@@ -31,14 +32,14 @@ def upload_to_firestore():
             for _, row in df.iterrows():
                 doc_id = str(row[id_field])
                 doc_data = row.to_dict()
-                # Convert badges to a list if present
-                if 'badges' in doc_data and doc_data['badges']:
+                # Handle badges: convert to list if string, else empty list
+                if 'badges' in doc_data and isinstance(doc_data['badges'], str) and doc_data['badges']:
                     doc_data['badges'] = doc_data['badges'].split(',')
                 else:
                     doc_data['badges'] = []
                 # Convert NaN values to None for Firestore compatibility
                 for key, value in doc_data.items():
-                    if pd.isna(value):
+                    if isinstance(value, float) and np.isnan(value):
                         doc_data[key] = None
                 # Upload to Firestore
                 db.collection(collection_name).document(doc_id).set(doc_data)
