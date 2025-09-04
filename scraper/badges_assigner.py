@@ -79,22 +79,22 @@ def assign_badges():
                 if (ground_finish_rate > 55) and (ground_landed_per_tko > 15) and (ctrl_avg > 150) and (total_fights >= 5) and (ko_tko_wins > 0):
                     fighter_badges.append('Doughmaker')
                     doughmaker_count += 1
-                if ((leg_landed_avg > 24.2) or (body_landed_avg > 25)) and (leg_landed_avg + body_landed_avg > 50) and (ko_tko_wins > 2) and (total_fights >= 5):
+                if ((leg_landed_avg > 24.3) or (body_landed_avg > 25)) and (leg_landed_avg + body_landed_avg > 50) and (ko_tko_wins > 2) and (total_fights >= 5):
                     fighter_badges.append('Kickin’ Pot Pie')
                     kickin_pot_pie_count += 1
             if (td_def > 82) and (td_attempts_received_avg < 10):
                 fighter_badges.append('Greasy')
                 greasy_count += 1
-            if (str_def > 59) and (sapm < 3.1) and (total_fights >= 5):
+            if (str_def > 58.5) and (sapm < 3.15) and (total_fights >= 5):
                 fighter_badges.append('Can’t Touch This')
                 cant_touch_this_count += 1
             if (kd_received_avg < 0.15) and (ko_loss_rate < 4) and (total_fights >= 5):
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
-            if (sub_att_received_avg < 0.65) and ((sub_def > 99) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 5):
+            if (sub_att_received_avg < 0.65) and ((sub_def > 99.5) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 5):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
-            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 155) and (sig_str_landed_per_sec > 0.22):
+            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 160) and (sig_str_landed_per_sec > 0.23):
                 fighter_badges.append('The Dogwalker')
                 dogwalker_count += 1
             if (five_round_fights >= 1) and (five_round_win_rate > 25) and (five_round_decision_rate > 5) and (five_round_wins >= 1):
