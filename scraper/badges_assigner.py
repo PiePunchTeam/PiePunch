@@ -105,7 +105,7 @@ def assign_badges():
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
                 logger.info(f"Iron Chin awarded to fighter {fid}: kd_received_avg={kd_received_avg}, ko_loss_rate={ko_loss_rate}, total_fights={total_fights}")
-            if (sub_att_received_avg < 0.7) and (sub_def > 80) and (never_submitted == 1):
+            if (sub_att_received_avg < 0.7) and ((sub_def > 80) or (sub_att_received_avg == 0)) and (never_submitted == 1):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
                 logger.info(f"Locksmith awarded to fighter {fid}: sub_att_received_avg={sub_att_received_avg}, sub_def={sub_def}, never_submitted={never_submitted}")
