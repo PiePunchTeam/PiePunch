@@ -111,11 +111,11 @@ def assign_badges():
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
                 logger.info(f"Locksmith awarded to fighter {fid}: sub_att_received_avg={sub_att_received_avg}, sub_def={sub_def}, never_submitted={never_submitted}, total_fights={total_fights}")
-            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 300) and (sig_str_landed_per_sec > 0.2):
+            if (total_fights >= 5) and (total_fight_time_sec / total_fights > 250) and (sig_str_landed_per_sec > 0.15):
                 fighter_badges.append('The Dogwalker')
                 dogwalker_count += 1
                 logger.info(f"The Dogwalker awarded to fighter {fid}: total_fight_time_avg={total_fight_time_sec / total_fights}, sig_str_landed_per_sec={sig_str_landed_per_sec}, total_fights={total_fights}")
-            if (five_round_fights >= 1) and (five_round_win_rate > 50) and (five_round_decision_rate > 30) and (five_round_wins >= 1):
+            if (five_round_fights >= 1) and (five_round_win_rate > 40) and (five_round_decision_rate > 20) and (five_round_wins >= 1):
                 fighter_badges.append('Champ Rounds')
                 champ_rounds_count += 1
                 logger.info(f"Champ Rounds awarded to fighter {fid}: five_round_fights={five_round_fights}, five_round_win_rate={five_round_win_rate}, five_round_decision_rate={five_round_decision_rate}, five_round_wins={five_round_wins}")
