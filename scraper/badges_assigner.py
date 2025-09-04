@@ -51,7 +51,7 @@ def assign_badges():
             sapm = row['sapm'] if pd.notnull(row['sapm']) else 0
             kd_received_avg = row['kd_received_avg'] if pd.notnull(row['kd_received_avg']) else 0
             ko_loss_rate = row['ko_loss_rate'] if pd.notnull(row['ko_loss_rate']) else 0
-            sub_att_received_avg = row['sub_att_received_avg'] if pd.notnull(row['sub_att_received_avg']) else 0
+            sub_att_received = row['sub_att_received'] if pd.notnull(row['sub_att_received']) else 0
             sub_def = row['sub_def'] if pd.notnull(row['sub_def']) else 0
             never_submitted = row['never_submitted'] if pd.notnull(row['never_submitted']) else 0
             total_fight_time_sec = row['total_fight_time_sec'] if pd.notnull(row['total_fight_time_sec']) else 0
@@ -91,7 +91,7 @@ def assign_badges():
             if (kd_received_avg < 0.15) and (ko_loss_rate < 4) and (total_fights >= 5):
                 fighter_badges.append('Iron Chin')
                 iron_chin_count += 1
-            if (sub_att_received_avg < 0.65) and ((sub_def > 99.8) or (sub_att_received_avg == 0)) and (never_submitted == 1) and (total_fights >= 5):
+            if (sub_att_received < 16) and (never_submitted == 1) and (total_fights >= 5):
                 fighter_badges.append('Locksmith')
                 locksmith_count += 1
             if (total_fights >= 5) and (total_fight_time_sec / total_fights > 160) and (sig_str_landed_per_sec > 0.23):
