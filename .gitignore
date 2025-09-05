@@ -14,3 +14,11 @@ npm-debug.log
 # Sensitive
 config/*
 data/*.csv
+
+# Exclude sensitive files
+config/firebase-adminsdk.json
+*.log
+*.txt
+
+# Allow CSVs
+!data/*.csv
