@@ -33,7 +33,7 @@ def combine_fighter_stats():
         combined_df = fighters_df.merge(defensive_df, on='id', how='left')
         combined_df = combined_df.merge(derived_df, on='id', how='left')
         
-        # Fill NaN values with defaults (0 for numeric, None for others)
+        # Fill NaN values with defaults (0 for numeric, empty string for others)
         numeric_columns = combined_df.select_dtypes(include=['float64', 'int64']).columns
         combined_df[numeric_columns] = combined_df[numeric_columns].fillna(0)
         combined_df = combined_df.fillna('')
