@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,25 +38,28 @@ jobs:
           echo "$FIREBASE_KEY" > config/firebase-adminsdk.json
 
       - name: Run core scraper
-        run: python scraper/core_scraper.py
+        run: python scraper/core_scraper.py || echo "Core scraper failed, continuing..."
 
       - name: Run defensive stats scraper
-        run: python scraper/defensive_stats_scraper.py
+        run: python scraper/defensive_stats_scraper.py || echo "Defensive stats scraper failed, continuing..."
 
       - name: Run derived stats calculator
-        run: python scraper/derived_stats_calculator.py
+        run: python scraper/derived_stats_calculator.py || echo "Derived stats calculator failed, continuing..."
 
       - name: Run combine fighter stats
-        run: python scraper/combine_fighter_stats.py
+        run: python scraper/combine_fighter_stats.py || echo "Combine fighter stats failed, continuing..."
 
       - name: Run badges assigner
-        run: python scraper/badges_assigner.py
+        run: python scraper/badges_assigner.py || echo "Badges assigner failed, continuing..."
 
       - name: Run comprehensive fighter details
-        run: python scraper/comprehensive_fighter_details.py
+        run: python scraper/comprehensive_fighter_details.py || echo "Comprehensive fighter details failed, continuing..."
+
+      - name: Run upcoming scraper
+        run: python scraper/upcoming_scraper.py || echo "Upcoming scraper failed, continuing..."
 
       - name: Upload to Firestore
-        run: python scraper/upload_to_firestore.py
+        run: python scraper/upload_to_firestore.py || echo "Firestore upload failed, continuing..."
 
       - name: Commit updated data files
         run: |

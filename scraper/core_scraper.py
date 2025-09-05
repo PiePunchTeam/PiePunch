@@ -18,9 +18,6 @@ fight_details = []
 new_fight_links_all = []
 winner_names = []
 fighter_detail_data = []
-upcoming_event_details = []
-upcoming_fight_details = []
-new_upcoming_fight_links = []
 MAX_THREADS = 2
 ua = UserAgent()
 HEADER = {'User-Agent': ua.chrome}
@@ -40,35 +37,40 @@ def get_existing_ids(file_path, id_field, date_field=None):
         df = pd.read_csv(file_path)
         ids = set(df[id_field].astype(str).unique())
         max_date = df[date_field].max() if date_field and date_field in df.columns else '1900-01-01'
-        return ids, max_date
+        return ids, max_date, len(df)
     except (FileNotFoundError, KeyError):
         logger.error(f"{file_path} not found or missing required columns.")
-        return set(), '1900-01-01'
+        return set(), '1900-01-01', 0
 
 # Load existing CSVs
-existing_event_ids, last_event_date = get_existing_ids('data/event_details.csv', 'event_id', 'date')
+existing_event_ids, last_event_date, _ = get_existing_ids('data/event_details.csv', 'event_id', 'date')
 existing_fight_ids = get_existing_ids('data/fight_details.csv', 'fight_id')[0]
-existing_fighter_ids = get_existing_ids('data/fighter_details.csv', 'id')[0]
-existing_upcoming_event_ids, last_upcoming_event_date = get_existing_ids('data/upcoming_event_details.csv', 'event_id', 'date')
-existing_upcoming_fight_ids = get_existing_ids('data/upcoming_fight_details.csv', 'fight_id')[0]
-logger.info(f"Last completed event date: {last_event_date}. Found {len(existing_event_ids)} events, {len(existing_fight_ids)} fights, {len(existing_fighter_ids)} fighters.")
-logger.info(f"Last upcoming event date: {last_upcoming_event_date}. Found {len(existing_upcoming_event_ids)} upcoming events, {len(existing_upcoming_fight_ids)} upcoming fights.")
+existing_fighter_ids, _, fighter_count = get_existing_ids('data/fighter_details.csv', 'id')
+logger.info(f"Last completed event date: {last_event_date}. Found {len(existing_event_ids)} events, {len(existing_fight_ids)} fights, {len(existing_fighter_ids)} fighters ({fighter_count} in fighter_details.csv).")
 
 # Load existing CSVs
 try:
     existing_events = pd.read_csv('data/event_details.csv')
     existing_fights = pd.read_csv('data/fight_details.csv')
     existing_fighters = pd.read_csv('data/fighter_details.csv')
-    existing_upcoming_events = pd.read_csv('data/upcoming_event_details.csv')
-    existing_upcoming_fights = pd.read_csv('data/upcoming_fight_details.csv')
 except FileNotFoundError:
     existing_events = pd.DataFrame()
     existing_fights = pd.DataFrame()
     existing_fighters = pd.DataFrame()
-    existing_upcoming_events = pd.DataFrame()
-    existing_upcoming_fights = pd.DataFrame()
 
-# Scrape event links (completed and upcoming)
+# Scrape all fighter links
+def scrape_fighter_links():
+    try:
+        response = session.get("http://ufcstats.com/statistics/fighters?sort=rank-desc&page=all")
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'lxml')
+        fighter_links_soup = soup.find_all('a', class_='b-link b-link_style_black')
+        return [link['href'] for link in fighter_links_soup if '/fighter-details/' in link['href']]
+    except Exception as e:
+        logger.error(f"Failed to scrape fighter links: {str(e)}")
+        return []
+
+# Scrape event links
 def scrape_event_links(url):
     try:
         response = session.get(url)
@@ -81,8 +83,7 @@ def scrape_event_links(url):
         return []
 
 completed_event_links = scrape_event_links("http://ufcstats.com/statistics/events/completed?page=all")
-upcoming_event_links = scrape_event_links("http://ufcstats.com/statistics/events/upcoming")
-logger.info(f"Found {len(completed_event_links)} completed events, {len(upcoming_event_links)} upcoming events.")
+logger.info(f"Found {len(completed_event_links)} completed events.")
 
 # Filter new completed events
 new_completed_event_links = []
@@ -103,26 +104,7 @@ for link in completed_event_links:
         logger.error(f"Failed to check completed event {link}: {str(e)}")
         continue
 
-# Filter new upcoming events
-new_upcoming_event_links = []
-for link in upcoming_event_links:
-    try:
-        event_id = link[-16:]
-        if event_id in existing_upcoming_event_ids:
-            continue
-        event_response = session.get(link)
-        event_response.raise_for_status()
-        event_soup = BeautifulSoup(event_response.text, 'lxml')
-        date_loc_list = event_soup.find_all('li', 'b-list__box-list-item')
-        date = date_loc_list[0].text.replace("Date:", "").strip()
-        if date > last_upcoming_event_date:
-            new_upcoming_event_links.append(link)
-        time.sleep(2)
-    except Exception as e:
-        logger.error(f"Failed to check upcoming event {link}: {str(e)}")
-        continue
-
-logger.info(f"Found {len(new_completed_event_links)} new completed events, {len(new_upcoming_event_links)} new upcoming events.")
+logger.info(f"Found {len(new_completed_event_links)} new completed events.")
 
 def get_completed_event_data(item):
     idx, link = item
@@ -165,38 +147,6 @@ def get_completed_event_data(item):
         time.sleep(2)
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to retrieve completed event {link}: {str(e)}")
-
-def get_upcoming_event_data(item):
-    idx, link = item
-    try:
-        response = session.get(link, headers=HEADER, timeout=15)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'lxml')
-        event_id = link[-16:]
-        if event_id in existing_upcoming_event_ids:
-            return
-        event_name = soup.find('span', class_='b-content__title-highlight').text.strip()
-        date_loc_list = soup.find_all('li', 'b-list__box-list-item')
-        date = date_loc_list[0].text.replace("Date:", "").strip()
-        location = date_loc_list[1].text.replace("Location:", "").strip()
-        fight_links = soup.find_all('tr', class_='b-fight-details__table-row b-fight-details__table-row__hover js-fight-details-click')
-        with lock:
-            data_dic = {
-                "event_id": event_id,
-                "event_name": event_name,
-                "date": date,
-                "location": location
-            }
-            upcoming_event_details.append(data_dic)
-            for i in fight_links:
-                fight_id = i['data-link'][-16:]
-                if fight_id in existing_upcoming_fight_ids:
-                    continue
-                new_upcoming_fight_links.append(i['data-link'])
-            logger.info(f"Scraped upcoming event {idx+1}/{len(new_upcoming_event_links)}: {link}")
-        time.sleep(2)
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to retrieve upcoming event {link}: {str(e)}")
 
 def get_completed_fight_data(item):
     idx, link = item
@@ -402,45 +352,6 @@ def get_completed_fight_data(item):
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed completed fight {idx+1}/{len(new_fight_links_all)}: {link} - {str(e)}")
 
-def get_upcoming_fight_data(item):
-    idx, link = item
-    try:
-        response = session.get(link, headers=HEADER, timeout=15)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'lxml')
-        event_name = soup.find('a', class_="b-link").text.strip()
-        event_id = soup.find('a', class_="b-link")['href'][-16:]
-        fight_id = link[-16:]
-        if fight_id in existing_upcoming_fight_ids:
-            return
-        fighter_nams = soup.find_all('a', class_='b-fight-details__person-link')
-        r_name = fighter_nams[0].text.strip()
-        b_name = fighter_nams[1].text.strip()
-        r_id = fighter_nams[0]['href'].strip()[-16:]
-        b_id = fighter_nams[1]['href'].strip()[-16:]
-        division_info = soup.find('i', class_='b-fight-details__fight-title').text.lower()
-        is_title_fight = 0
-        if 'title' in division_info:
-            is_title_fight = 1
-        division_info = division_info.replace('ufc', "").replace("title", "").replace("bout", "").strip()
-        with lock:
-            data_dic = {
-                "event_name": event_name,
-                "event_id": event_id,
-                "fight_id": fight_id,
-                "r_name": r_name,
-                "r_id": r_id,
-                "b_name": b_name,
-                "b_id": b_id,
-                "division": division_info,
-                "title_fight": is_title_fight
-            }
-            upcoming_fight_details.append(data_dic)
-            logger.info(f"Scraped upcoming fight {idx+1}/{len(new_upcoming_fight_links)}: {link}")
-        time.sleep(2)
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Failed upcoming fight {idx+1}/{len(new_upcoming_fight_links)}: {link} - {str(e)}")
-
 def get_fighter_data(item):
     idx, id = item
     try:
@@ -516,14 +427,20 @@ def get_fighter_data(item):
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed fighter {idx+1}/{len(all_ids)}: {id} - {str(e)}")
 
+# Scrape all fighters if fighter_details.csv is incomplete
+if fighter_count < 2000:  # Threshold to trigger full fighter scrape
+    logger.info("fighter_details.csv has fewer than 2000 fighters, scraping all fighters")
+    fighter_links = scrape_fighter_links()
+    all_ids = [link[-16:] for link in fighter_links]
+else:
+    fight_details_df = pd.DataFrame(fight_details)
+    r_fighter_id = fight_details_df['r_id'].unique() if 'r_id' in fight_details_df else []
+    b_fighter_id = fight_details_df['b_id'].unique() if 'b_id' in fight_details_df else []
+    all_ids = list(set(list(r_fighter_id) + list(b_fighter_id)))
+
 # Run event and fight scraping
 with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
     results = [executor.submit(get_completed_event_data, item) for item in enumerate(new_completed_event_links)]
-    for r in results:
-        r.result()
-
-with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-    results = [executor.submit(get_upcoming_event_data, item) for item in enumerate(new_upcoming_event_links)]
     for r in results:
         r.result()
 
@@ -532,26 +449,14 @@ with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
     for r in results:
         r.result()
 
-with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-    results = [executor.submit(get_upcoming_fight_data, item) for item in enumerate(new_upcoming_fight_links)]
-    for r in results:
-        r.result()
-
 # Scrape fighter data
-if fight_details or upcoming_fight_details:
-    fight_details_df = pd.DataFrame(fight_details)
-    upcoming_fight_details_df = pd.DataFrame(upcoming_fight_details)
-    r_fighter_id = fight_details_df['r_id'].unique() if 'r_id' in fight_details_df else []
-    b_fighter_id = fight_details_df['b_id'].unique() if 'b_id' in fight_details_df else []
-    r_upcoming_fighter_id = upcoming_fight_details_df['r_id'].unique() if 'r_id' in upcoming_fight_details_df else []
-    b_upcoming_fighter_id = upcoming_fight_details_df['b_id'].unique() if 'b_id' in upcoming_fight_details_df else []
-    all_ids = list(set(list(r_fighter_id) + list(b_fighter_id) + list(r_upcoming_fighter_id) + list(b_upcoming_fighter_id)))
+if all_ids:
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         results = [executor.submit(get_fighter_data, item) for item in enumerate(all_ids)]
         for r in results:
             r.result()
 else:
-    logger.info("No new completed or upcoming fights scraped. Skipping fighter data collection.")
+    logger.info("No new fighters to scrape.")
 
 # Append new data to CSVs
 if winner_names:
@@ -571,22 +476,6 @@ if fight_details:
 else:
     logger.info("No new completed fights to save.")
 
-if upcoming_event_details:
-    df_upcoming_event = pd.DataFrame(data=upcoming_event_details)
-    if not existing_upcoming_events.empty:
-        df_upcoming_event = pd.concat([existing_upcoming_events, df_upcoming_event]).drop_duplicates(subset=['event_id'], keep='last')
-    df_upcoming_event.to_csv("data/upcoming_event_details.csv", index=False)
-else:
-    logger.info("No new upcoming events to save.")
-
-if upcoming_fight_details:
-    df_upcoming_fight = pd.DataFrame(data=upcoming_fight_details)
-    if not existing_upcoming_fights.empty:
-        df_upcoming_fight = pd.concat([existing_upcoming_fights, df_upcoming_fight]).drop_duplicates(subset=['fight_id'], keep='last')
-    df_upcoming_fight.to_csv("data/upcoming_fight_details.csv", index=False)
-else:
-    logger.info("No new upcoming fights to save.")
-
 if fighter_detail_data:
     df_fighter = pd.DataFrame(data=fighter_detail_data)
     if not existing_fighters.empty:
@@ -595,5 +484,5 @@ if fighter_detail_data:
 else:
     logger.info("No new fighters to save.")
 
-logger.info(f"Core scraper complete. Updated {len(fight_details)} completed fights, {len(upcoming_fight_details)} upcoming fights, {len(fighter_detail_data)} fighters.")
-print(f"Core scraper complete. Updated {len(fight_details)} completed fights, {len(upcoming_fight_details)} upcoming fights, {len(fighter_detail_data)} fighters.")
+logger.info(f"Core scraper complete. Updated {len(fight_details)} completed fights, {len(fighter_detail_data)} fighters.")
+print(f"Core scraper complete. Updated {len(fight_details)} completed fights, {len(fighter_detail_data)} fighters.")
