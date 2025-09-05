@@ -1,0 +1,177 @@
+id,name,nick_name,wins,losses,draws,height,weight,reach,stance,dob,splm,str_acc,sapm,str_def,td_avg,td_acc,td_def,sub_avg
+d802174b0c0c1f4e,Magomed Ankalaev,,21,1,1,190.5,92.99,190.5,Orthodox,"Jun 02, 1992",3.66,52,2.46,57,0.8,22,87,0.0
+4bdedbdeedff7d1d,Bolaji Oki,The Zulu Warrior,10,2,0,177.8,70.31,185.42,Orthodox,"Nov 15, 1995",7.05,45,4.76,62,1.24,75,85,0.0
+7facc9c45d792985,Kaan Ofli,Genghis,12,4,1,170.18,65.77,167.64,Orthodox,"Jun 19, 1993",2.0,45,2.93,60,0.0,0,0,0.0
+24656ef4d605c96f,Aiemann Zahabi,,13,2,0,172.72,61.23,172.72,Orthodox,"Nov 19, 1987",4.42,46,4.13,69,0.14,14,83,0.0
+285ae0b4a68221f4,JunYong Park,The Iron Turtle,19,6,0,177.8,83.91,185.42,Orthodox,"Feb 27, 1991",4.59,50,3.59,53,1.87,42,57,0.9
+f1d64ae34e088832,Charles Jourdain,Air,16,8,1,175.26,61.23,175.26,Switch,"Nov 27, 1995",5.43,48,4.27,56,0.34,21,47,0.6
+9014c02eff8b3d62,Carlos Ulberg,Black Jag,13,1,0,193.04,92.99,195.58,Orthodox,"Nov 07, 1990",6.77,55,4.21,51,0.58,60,85,0.2
+70dd69b6a703257e,Daniil Donchenko,,12,2,0,,77.11,,Orthodox,"Aug 04, 2001",0.0,0,0.0,0,0.0,0,0,0.0
+23dec7c47cb418f8,Zachary Reese,Savage,9,2,0,193.04,83.91,195.58,Switch,"Mar 24, 1994",4.28,54,2.99,43,2.88,58,57,1.2
+b07aed698fba8624,Ikram Aliskerov,,16,2,0,182.88,83.91,193.04,Southpaw,"Dec 07, 1992",7.76,62,5.78,41,1.14,33,100,1.1
+6b453bc35a823c3f,Jack Della Maddalena,,18,2,0,180.34,77.11,185.42,Switch,"Sep 10, 1996",6.84,52,4.53,64,0.16,11,69,0.2
+40a456a25d52ee65,Rolando Bedoya,The Machine,14,4,0,180.34,70.31,187.96,Orthodox,"Jan 13, 1997",7.29,49,6.38,52,0.0,0,33,0.0
+528b071cf3da7c56,Luana Carolina,Dread,11,4,0,167.64,61.23,175.26,Orthodox,"Jun 11, 1993",4.81,50,3.54,50,0.34,37,74,0.6
+710f0f8c5d5c9d41,Lucas Almeida,,15,4,0,180.34,65.77,180.34,Orthodox,"Jan 31, 1991",4.94,39,5.04,44,0.0,0,53,0.0
+87e4a3a5080ee7ce,Elisha Ellison,Snack Panther,5,1,0,,120.2,,,"Mar 05, 1997",0.0,0,0.0,0,0.0,0,0,0.0
+baa9be02c3e3e038,Jose Medina,Chicho,11,5,0,182.88,83.91,187.96,Orthodox,"May 17, 1991",2.18,36,5.25,47,0.45,33,31,0.0
+bc711b6dd95c1af6,Mario Bautista,,16,2,0,175.26,61.23,175.26,Switch,"Jul 01, 1993",6.13,49,4.45,55,1.67,33,67,0.8
+2cfba6c837c03ed0,Patchy Mix,No Love,20,2,0,180.34,61.23,177.8,Southpaw,"Aug 16, 1993",8.13,40,11.53,42,0.0,0,0,0.0
+d549cefc7c54ab78,Reinier de Ridder,RdR,21,2,0,193.04,83.91,198.12,Southpaw,"Sep 07, 1990",2.95,52,2.44,50,2.86,27,66,0.6
+ed7d329d7c29428d,Colby Thicknesse,Slickness,7,1,0,170.18,61.23,175.26,Orthodox,"Jun 23, 1999",2.53,29,2.73,48,0.0,0,50,0.0
+3329d692aea4dc28,Hamdy Abdelwahab,The Hammer,6,1,0,187.96,119.75,182.88,Southpaw,"Jan 22, 1993",3.49,49,4.49,51,1.33,66,100,0.0
+aa72b0f831d0bfe5,Deiveson Figueiredo,Deus da Guerra,24,5,1,165.1,61.23,172.72,Orthodox,"Dec 18, 1987",2.82,54,3.64,49,1.69,35,58,1.4
+a44020ea2e8cd026,JooSang Yoo,Zombie Jr.,9,0,0,170.18,65.77,180.34,Orthodox,"Jan 21, 1994",12.86,75,4.29,50,0.0,0,0,0.0
+6c3b2525436cf5d4,Tom Nolan,Big Train,9,1,0,190.5,70.31,185.42,Southpaw,"Mar 08, 2000",5.82,45,4.85,46,0.41,12,66,1.6
+65adf3856c4d9256,Jafel Filho,Pastor,16,4,0,170.18,56.7,172.72,Orthodox,"May 05, 1993",1.92,41,1.63,47,2.45,42,66,2.1
+093e1f5bb73850be,Anthony Hernandez,Fluffy,15,2,0,182.88,83.91,190.5,Orthodox,"Oct 18, 1993",4.59,62,2.53,49,6.46,48,68,1.8
+545092d13c67aa49,Alexia Thainara,Burguesinha,12,1,0,162.56,52.16,170.18,Orthodox,"Nov 20, 1995",5.73,40,2.82,70,3.07,100,0,2.3
+70e1f8a821b72c8b,Jimmy Crute,,13,4,2,187.96,92.99,187.96,Orthodox,"Mar 04, 1996",4.17,52,3.68,42,4.2,52,58,1.9
+8ebc3a8da015d70c,Cam Rowston,Battle Giraffe,12,3,0,190.5,83.91,198.12,Orthodox,"Jan 19, 1995",3.23,49,2.34,50,0.83,50,28,0.8
+af9f42e6894047fc,Jamie Mullarkey,,17,8,0,182.88,70.31,187.96,Orthodox,"Aug 17, 1994",4.39,46,4.53,53,2.31,34,78,0.1
+1ebe20ebbfa15e29,Zhang Weili,Magnum,26,3,0,162.56,52.16,160.02,Switch,"Aug 13, 1989",5.15,53,2.77,54,2.24,45,74,0.5
+9c393e836a852f30,Mauricio Ruffy,,12,1,0,180.34,70.31,190.5,Orthodox,"Jun 17, 1996",4.54,58,4.59,61,0.0,0,100,0.0
+69898645d600abdb,Rodolfo Bellato,Trator,12,2,1,190.5,92.99,190.5,Orthodox,"Feb 05, 1996",5.84,61,6.0,45,1.26,36,100,0.3
+32feae6d9a1e5047,Quang Le,Bang,9,2,0,167.64,61.23,177.8,Orthodox,"Oct 18, 1991",2.7,37,4.53,47,3.15,35,100,0.5
+866fd7b1a6c90e7f,Dusko Todorovic,Thunder,12,6,0,185.42,83.91,187.96,Orthodox,"May 19, 1994",4.79,57,4.53,47,1.5,17,42,0.2
+b62d5280966b2460,Clayton Carpenter,,8,1,0,167.64,56.7,167.64,Orthodox,"Jun 09, 1996",3.91,55,2.75,55,2.23,46,42,1.5
+1b35af4d1529adf6,Stephanie Luciano,Rondinha,6,2,1,167.64,52.16,165.1,Orthodox,"Dec 16, 1999",5.36,41,3.38,61,0.67,66,80,0.0
+e1d40e8782d80bc2,William Gomis,Jaguar,14,3,0,182.88,65.77,185.42,Southpaw,"Jun 13, 1997",3.53,51,2.86,60,0.62,27,73,0.4
+46e2011d92463b7e,Oumar Sy,,11,1,0,193.04,92.99,210.82,Orthodox,"Nov 21, 1995",3.68,50,1.81,70,2.22,33,100,0.4
+873626e5547b5235,Kyle Prepolec,Killshot,18,9,0,177.8,70.31,177.8,Southpaw,"Aug 30, 1989",2.87,35,5.19,49,0.0,0,40,0.0
+eabf206b162b3b83,Paul Craig,Bearjew,17,9,1,190.5,92.99,193.04,Orthodox,"Nov 27, 1987",2.54,45,3.0,43,1.47,19,35,1.4
+f748267c4ab6c127,Rhys McKee,Skeletor,14,6,1,187.96,77.11,198.12,Orthodox,"Sep 10, 1995",5.16,44,7.92,46,0.0,0,41,0.0
+a9e260472d321361,Jasmine Jasudavicius,,14,3,0,170.18,56.7,172.72,Orthodox,"Mar 01, 1989",3.71,45,3.63,51,2.61,44,75,0.6
+7447e9f28508106a,Mackenzie Dern,,15,5,0,162.56,52.16,160.02,Orthodox,"Mar 24, 1993",3.31,40,3.9,52,0.89,17,25,1.2
+29162be25ebef5f0,Luis Gurule,Grim,10,1,0,165.1,56.7,162.56,Orthodox,"Nov 16, 1993",5.34,48,3.74,58,0.68,16,50,0.0
+05339613bf8e9808,Rob Font,,22,8,0,172.72,61.23,180.34,Orthodox,"Jun 25, 1987",5.49,46,3.67,57,0.79,34,42,0.4
+7f1bf0c255ec8756,Azat Maksum,Qazaq,15,2,0,170.18,56.7,177.8,Southpaw,"Feb 02, 1995",3.24,28,5.0,52,2.33,28,85,0.3
+c5ccd878231c5407,Ramon Taveras,The Savage,10,3,0,172.72,65.77,177.8,Southpaw,"Jan 09, 1994",4.62,44,7.41,57,0.0,0,100,0.0
+c2299ec916bc7c56,Benoit Saint Denis,God of War,14,3,0,180.34,70.31,185.42,Southpaw,"Dec 18, 1995",5.39,55,4.61,41,4.19,39,70,1.5
+d9a56ecb6e94f02e,Evan Elder,The Phenom,10,2,0,177.8,70.31,182.88,Switch,"Apr 11, 1997",5.66,50,4.94,57,0.48,15,40,0.5
+ca80d72da81d7224,Michelle Montague,The Wild One,6,0,0,,61.23,,,"Nov 25, 1993",0.0,0,0.0,0,0.0,0,0,0.0
+cc1a8b4b38b92c6d,Montel Jackson,Quik,15,2,0,177.8,61.23,190.5,Southpaw,"Apr 24, 1992",3.22,53,1.39,62,3.24,62,68,0.4
+faf317c665546a36,Santiago Luna,Borderboy,6,0,0,,61.23,,,"Aug 06, 2004",0.0,0,0.0,0,0.0,0,0,0.0
+3fa97913cfd205d3,Alessandro Costa,Nono,14,4,0,162.56,56.7,170.18,Orthodox,"Jan 28, 1996",4.14,47,3.5,57,0.27,12,90,0.0
+f6ad6a1e4d600e0d,Mason Jones,The Dragon,16,2,0,177.8,70.31,187.96,Orthodox,"Apr 26, 1995",5.56,41,4.46,48,4.24,52,80,0.0
+7dda2cf308f24a02,Virna Jandiroba,Carcara,22,3,0,160.02,52.16,162.56,Orthodox,"May 30, 1988",1.97,38,2.55,57,2.37,33,73,1.8
+d747eb273a40a920,Claudio Puelles,Prince of Peru,13,4,0,177.8,70.31,182.88,Southpaw,"Apr 21, 1996",1.56,49,2.78,46,3.17,36,60,1.2
+3bc3f60b21cddc6a,Azamat Bekoev,Iron,20,3,0,182.88,83.91,182.88,Orthodox,"Dec 30, 1995",7.59,61,4.48,46,2.59,33,100,0.0
+39d309957c5c210d,Mario Pinto,,10,0,0,195.58,120.2,200.66,Orthodox,"Mar 14, 1998",3.67,71,5.29,51,0.0,0,100,0.0
+749f572d1d3161fb,Khalil Rountree Jr.,,15,6,0,185.42,92.99,193.04,Southpaw,"Feb 26, 1990",3.79,40,4.24,49,0.0,0,58,0.1
+64ad3e3b0efa30bb,Ivan Erslan,,14,5,0,187.96,92.99,182.88,Orthodox,"Nov 15, 1991",2.5,44,5.17,55,0.5,20,64,0.0
+fba03cd6cc28dc41,Josh Emmett,CC0,19,5,0,167.64,65.77,177.8,Orthodox,"Mar 04, 1985",3.75,35,4.46,60,1.09,37,46,0.1
+113df4fde64735c6,Davey Grant,Dangerous,17,7,0,172.72,61.23,175.26,Orthodox,"Dec 18, 1985",5.18,44,3.74,55,1.04,40,63,0.2
+7c7332319c14094c,Marlon Vera,Chito,23,10,1,172.72,61.23,177.8,Switch,"Dec 02, 1992",4.27,49,5.37,50,0.51,39,72,0.8
+60193e707634e560,Montse Rendon,Monster,6,1,0,172.72,61.23,172.72,Orthodox,"Mar 16, 1989",3.13,28,3.9,54,3.0,54,100,0.0
+6d1bffff14897645,Santiago Ponzinibbio,Argentine Dagger,31,9,0,182.88,77.11,185.42,Orthodox,"Sep 26, 1986",4.78,41,4.68,61,0.6,27,71,0.0
+294aa73dbf37d281,Bruno Silva,Bulldog,14,7,2,162.56,56.7,165.1,Orthodox,"Mar 16, 1990",3.83,49,4.81,50,1.79,23,60,0.2
+787bb1f087ccff8a,Ciryl Gane,Bon Gamin,13,2,0,193.04,111.13,205.74,Orthodox,"Apr 12, 1990",5.26,61,2.23,61,0.7,25,43,0.6
+9a97acbfd5a08bfa,David Martinez,Black Spartan,12,1,0,165.1,61.23,170.18,Orthodox,"Aug 03, 1998",5.4,52,2.7,67,0.0,0,100,0.0
+6902fcf0610dd303,Jakub Wiklacz,Masa,16,3,2,,61.23,,,"Sep 10, 1996",0.0,0,0.0,0,0.0,0,0,0.0
+f166e93d04a8c274,Diego Lopes,,26,7,0,180.34,65.77,182.88,Orthodox,"Dec 30, 1994",3.7,47,4.76,46,0.35,40,67,1.9
+dd6103dd7127db1d,Mike Malott,Proper,12,2,1,185.42,77.11,185.42,Orthodox,"Nov 07, 1991",4.09,47,2.96,54,2.08,56,16,0.7
+34ff304266360297,Manon Fiorot,The Beast,12,2,0,170.18,56.7,165.1,Orthodox,"Feb 17, 1990",5.58,41,3.59,66,1.06,29,87,0.0
+279566840aa55bf2,Alexander Volkov,Drago,38,11,0,200.66,113.4,203.2,Orthodox,"Oct 24, 1988",4.97,57,2.99,54,0.61,66,72,0.2
+4126a78111c0855a,Caio Borralho,The Natural,17,1,0,185.42,83.91,190.5,Southpaw,"Jan 16, 1993",3.61,60,2.34,62,1.56,60,76,0.5
+7674b836ce0698a0,Yousri Belgaroui,,8,3,0,195.58,83.91,200.66,Orthodox,"Jun 02, 1992",4.43,60,2.65,57,0.0,0,81,0.0
+f96856f9d69fd7e4,Robert Bryczek,,17,6,0,182.88,83.91,190.5,Orthodox,"Jul 04, 1990",2.13,24,4.47,60,0.0,0,100,0.0
+41e83a89929d1327,Jailton Almeida,Malhadinho,22,3,0,190.5,92.99,200.66,Orthodox,"Jun 26, 1991",2.62,65,0.89,41,6.58,60,60,2.4
+6967153c7edb4d87,Ozzy Diaz,,10,3,0,193.04,83.91,200.66,Orthodox,"Nov 22, 1990",6.44,50,7.23,59,0.0,0,50,0.0
+e13abac8089a801a,Justin Tafa,Bad Man,7,5,0,182.88,119.75,187.96,Southpaw,"Dec 13, 1993",4.05,54,5.11,47,0.0,0,53,0.0
+6b56e94a59b7b134,Oban Elliott,The Welsh Gangster,12,3,0,182.88,77.11,182.88,Orthodox,"Dec 19, 1997",3.5,48,2.24,60,1.7,44,55,0.0
+c051c2e12d692b8a,Jesus Aguilar,,11,3,0,162.56,56.7,157.48,Orthodox,"Mar 13, 1996",1.73,45,1.1,59,1.83,35,40,1.8
+886264a0c9f4ea5e,Andre Muniz,Sergipano,24,7,0,185.42,83.91,198.12,Southpaw,"Feb 17, 1990",2.04,49,2.33,51,4.02,49,35,1.2
+3df5493bb279226f,Amanda Lemos,,15,4,1,162.56,52.16,165.1,Southpaw,"May 22, 1987",2.89,54,3.46,44,1.14,62,59,0.7
+b7c5eb7cdbac6a63,Danny Barlow,LeftHand2God,9,1,0,187.96,83.91,200.66,Southpaw,"Aug 02, 1995",5.62,50,3.7,51,0.0,0,100,0.0
+4e30e4250cb08b61,Loma Lookboonmee,,10,3,0,154.94,52.16,154.94,Orthodox,"Jan 18, 1996",3.87,56,2.47,52,2.03,51,73,0.1
+07225ba28ae309b6,Charles Oliveira,Do Bronxs,35,11,0,177.8,70.31,187.96,Orthodox,"Oct 17, 1989",3.41,55,3.26,48,2.23,39,56,2.6
+7026eca45f65377b,Jared Gordon,Flash,21,7,0,175.26,70.31,172.72,Orthodox,"Sep 06, 1988",5.67,55,3.91,56,1.83,32,62,0.0
+71505842fb6455c3,Dustin Stoltzfus,,16,7,0,182.88,83.91,190.5,Orthodox,"Nov 15, 1991",3.14,45,3.14,47,2.26,41,46,1.3
+b671bdf981ad527d,HyunSung Park,Peace of Mind,10,1,0,170.18,56.7,167.64,Orthodox,"Nov 04, 1995",3.66,46,2.94,59,1.59,33,50,2.4
+4e6738062d469256,Sedriques Dumas,The Reaper,10,3,0,187.96,83.91,200.66,Orthodox,"Aug 06, 1995",2.1,45,2.5,55,1.25,35,40,0.2
+1d2d98ddd05b38fb,Axel Sola,,10,0,1,187.96,77.11,187.96,Southpaw,"Sep 17, 1997",0.0,0,0.0,0,0.0,0,0,0.0
+49edd0d90f60fb7d,Brendson Ribeiro,The Gorilla,17,8,0,190.5,92.99,205.74,Orthodox,"Sep 08, 1996",3.26,42,4.04,52,0.99,42,0,0.7
+b67d6bacc68d4c92,Daniel Santos,Willycat,13,2,0,170.18,65.77,170.18,Orthodox,"Mar 12, 1995",4.74,40,4.96,51,3.03,39,73,0.0
+6d4b63c767106d3a,Vicente Luque,The Silent Assassin,23,11,1,180.34,77.11,190.5,Orthodox,"Nov 27, 1991",5.02,51,5.25,52,0.97,51,61,0.7
+2f815ed5f8278ba6,Ateba Gautier,The Silent Assassin,8,1,0,193.04,83.91,205.74,Switch,"Apr 10, 2002",6.93,61,2.19,52,0.0,0,90,0.0
+5f61780fe5e9b6d0,Andre Petroski,,13,5,0,182.88,83.91,185.42,Switch,"Jun 12, 1991",2.82,49,2.75,52,3.21,51,86,1.3
+01641ba5df0c69b0,Gabriel Bonfim,Marretinha,18,1,0,185.42,77.11,182.88,Orthodox,"Aug 20, 1997",4.54,45,3.53,63,4.03,55,76,1.6
+881bf86d4cba8578,Nassourdine Imavov,The Sniper,16,4,0,190.5,83.91,190.5,Orthodox,"Mar 01, 1996",4.45,55,3.26,58,0.85,32,78,1.1
+9c442aaf149ea982,Shauna Bannon,Mama B,7,1,0,165.1,52.16,165.1,Switch,"Oct 23, 1993",4.77,43,3.88,44,0.0,0,42,0.8
+abb68e3c7ca128f2,Julia Polastri,Psycho,13,5,0,157.48,52.16,160.02,Orthodox,"Mar 05, 1998",5.62,55,5.37,56,0.87,80,58,0.4
+e5549c82bfb5582d,Alex Pereira,Poatan,12,3,0,193.04,92.99,200.66,Orthodox,"Jul 07, 1987",5.0,62,3.5,53,0.11,50,78,0.2
+723b64c0e9a8f348,Josias Musasa,The KO Wizard,8,1,0,172.72,61.23,187.96,Southpaw,"Oct 10, 1998",3.45,43,4.6,28,0.82,50,77,0.8
+0c6d9ea8306c029e,Brad Tavares,,21,11,0,185.42,83.91,187.96,Orthodox,"Dec 21, 1987",3.42,43,3.28,55,0.71,26,81,0.0
+45f0cc9d18f35137,Chris Gutierrez,El Guapo,22,6,2,175.26,61.23,170.18,Orthodox,"Apr 22, 1991",4.59,58,2.65,63,0.24,25,70,0.1
+f5779a2303ed76ec,Valter Walker,The Clean Monster,14,1,0,198.12,120.2,198.12,Orthodox,"Dec 14, 1997",1.9,49,2.89,42,5.43,66,0,2.0
+da7f113b5ea39c43,Mohammed Usman,The Motor,12,4,0,187.96,108.41,200.66,Orthodox,"Apr 01, 1989",3.85,39,4.27,51,0.56,14,66,0.0
+81d2c551886bd5a1,Alice Pereira,Golden Girl,6,0,0,,61.23,,,"Dec 20, 2005",0.0,0,0.0,0,0.0,0,0,0.0
+a845f0735bc67405,Jake Matthews,The Celtic Kid,22,7,0,180.34,77.11,185.42,Orthodox,"Aug 19, 1994",3.44,43,2.63,60,1.51,42,67,0.6
+c03520b5c88ed6b4,Merab Dvalishvili,The Machine,20,4,0,167.64,61.23,172.72,Orthodox,"Jan 10, 1991",4.31,42,2.48,56,5.84,35,82,0.3
+36b8f265bcd1b7a4,Abus Magomedov,,28,6,1,187.96,83.91,198.12,Orthodox,"Sep 02, 1990",3.21,48,3.68,56,2.65,57,100,0.2
+a09ed60aa67a3f67,Farid Basharat,Ferocious,13,0,0,172.72,61.23,180.34,Orthodox,"Aug 02, 1997",4.36,55,2.57,59,3.97,44,80,0.5
+c06d6b18862f9a53,Rodrigo Sezinando,,9,1,0,,77.11,,Orthodox,"Dec 11, 1997",0.0,0,0.0,0,0.0,0,0,0.0
+ae7fe94f117f98cf,Joaquim Silva,Netto BJJ,13,6,0,172.72,70.31,175.26,Southpaw,"Feb 05, 1989",3.66,43,4.53,53,0.39,50,69,0.8
+d7c3816669784109,Karolina Kowalkiewicz,,16,9,0,160.02,52.16,162.56,Orthodox,"Oct 15, 1985",5.54,43,5.51,57,0.31,22,74,0.2
+399afbabc02376b5,Tom Aspinall,,15,3,0,195.58,116.12,198.12,Orthodox,"Apr 11, 1993",8.07,67,2.89,65,3.27,100,100,1.6
+312f7d7b2b2f7de4,Djorden Santos,Shakur,10,2,0,182.88,83.91,190.5,Orthodox,"Aug 01, 1997",7.2,43,5.87,49,1.0,40,86,0.0
+519e4fe37ce9ff75,Drew Dober,,27,15,0,172.72,70.31,177.8,Southpaw,"Oct 19, 1988",4.36,40,4.33,51,0.66,17,56,0.1
+92aed9d16794f42b,Robert Ruchala,Faker,11,1,0,172.72,65.77,182.88,Switch,"May 15, 1998",0.0,0,0.0,0,0.0,0,0,0.0
+7ee0fd831c0fe7c3,Carlos Prates,The Nightmare,22,7,0,185.42,77.11,198.12,Switch,"Aug 17, 1993",3.82,54,4.8,48,0.23,100,84,0.0
+52ef95b5860fb28c,Jean Silva,Lord,16,2,0,170.18,65.77,175.26,Orthodox,"Dec 27, 1996",4.87,52,4.13,56,0.6,50,86,0.9
+009341ed974bad72,Jiri Prochazka,,31,5,1,190.5,92.99,203.2,Orthodox,"Oct 14, 1992",5.74,55,5.7,43,0.6,60,68,0.2
+4333a8e70a672eb7,Brogan Walker,The Bear,8,4,0,162.56,56.7,170.18,Switch,"Aug 02, 1988",2.04,30,3.7,47,0.0,0,11,0.0
+4948e412fa6ab67d,Ravena Oliveira,Kenoudy,7,2,1,165.1,52.16,165.1,Orthodox,"Feb 20, 1997",1.0,48,1.2,48,2.0,66,62,0.0
+43a59ce3bb40449e,Mizuki,,15,6,0,160.02,52.16,165.1,Orthodox,"Aug 19, 1994",4.56,50,5.62,48,0.33,14,85,0.0
+c9cf753cfdf77fc2,Marcin Tybura,Tybur,27,9,0,190.5,112.94,198.12,Orthodox,"Nov 09, 1985",3.6,48,3.31,55,1.39,33,75,0.1
+132deb59abae64b1,Valentina Shevchenko,Bullet,25,4,1,165.1,56.7,167.64,Southpaw,"Mar 07, 1988",3.14,52,2.06,63,2.62,60,75,0.3
+b08012bbe542592a,Tatiana Suarez,,11,1,0,165.1,52.16,167.64,Southpaw,"Dec 19, 1990",3.22,61,1.58,47,4.65,47,80,0.7
+9cdd2da1a9104a0b,Macy Chiasson,,11,4,0,180.34,61.23,182.88,Orthodox,"Jul 27, 1991",3.49,46,2.68,45,2.08,35,71,0.4
+1ae8f3c723aacff4,Ricardo Ramos,,17,7,0,175.26,65.77,182.88,Orthodox,"Aug 01, 1995",2.97,36,4.06,54,2.57,57,70,0.7
+476fe566d2df676e,Modestas Bukauskas,The Baltic Gladiator,18,6,0,190.5,92.99,193.04,Switch,"Feb 10, 1994",3.26,42,4.07,51,0.31,66,77,0.2
+2b6fc1c02736833d,Umar Nurmagomedov,,18,1,0,172.72,61.23,175.26,Orthodox,"Jan 03, 1996",4.38,57,2.15,60,3.26,39,78,0.3
+5b43d68174b6e2ab,Losene Keita,Black Panther,16,1,0,172.72,65.77,182.88,Orthodox,"Dec 30, 1997",0.0,0,0.0,0,0.0,0,0,0.0
+c6aee362c7a7d482,Randy Brown,Rudeboy,20,6,0,190.5,77.11,198.12,Orthodox,"Jul 08, 1990",4.47,47,3.26,54,0.79,39,73,0.6
+8b6e5dc2ba1edbe7,Sam Patterson,,13,2,1,190.5,77.11,198.12,Orthodox,"Apr 30, 1996",3.17,41,3.6,48,1.61,100,33,3.2
+7d8435c56043b0ae,Ante Delija,Walking Trouble,25,6,0,190.5,111.13,198.12,Orthodox,"Aug 07, 1990",0.0,0,0.0,0,0.0,0,0,0.0
+3143bf892608139a,Yana Santos,,16,8,0,167.64,61.23,172.72,Orthodox,"Nov 11, 1989",4.42,58,3.07,52,0.87,50,53,0.1
+25f9a5f3e8a52618,Jhonata Diniz,,9,1,0,193.04,115.21,200.66,Orthodox,"Jun 23, 1991",4.58,56,3.71,59,0.0,0,78,0.0
+f782f953bfe7b5f2,Jonathan Micallef,The Captain,8,1,0,182.88,77.11,195.58,Southpaw,"Mar 05, 1999",4.77,43,4.0,58,0.83,50,50,0.8
+c1085e1701b13eca,Joe Pyfer,Bodybagz,14,3,0,187.96,83.91,190.5,Orthodox,"Sep 17, 1996",3.74,43,3.2,54,1.35,42,60,0.7
+4144798612ef96e5,Edmen Shahbazyan,The Golden Boy,15,5,0,187.96,83.91,190.5,Orthodox,"Nov 20, 1997",3.74,48,3.62,48,1.69,37,66,0.4
+2bd98ab77a8daa75,Stewart Nicoll,Kakamora,8,1,0,165.1,56.7,165.1,Orthodox,"Nov 04, 1994",3.02,47,1.13,40,5.66,100,0,0.0
+8c0580d4fff106c1,Kelvin Gastelum,,20,10,0,175.26,83.91,180.34,Southpaw,"Oct 24, 1991",3.67,42,3.49,57,1.05,34,58,0.1
+bc7d1ad49fcb2d08,Jaqueline Amorim,,10,1,0,160.02,52.16,172.72,Orthodox,"Jun 24, 1995",2.68,53,1.43,64,2.22,37,0,4.8
+2e19380f34871c6a,Dominick Reyes,The Devastator,15,4,0,193.04,92.99,195.58,Southpaw,"Dec 26, 1989",5.58,54,3.54,50,0.31,28,82,0.3
+0be6776db31d98ec,Mitch Raposo,,9,3,0,165.1,56.7,162.56,Switch,"Oct 16, 1998",1.62,33,3.2,55,3.54,37,50,0.0
+2dbc60c52de126d8,Harry Hardwick,Houdini,13,3,1,172.72,70.31,180.34,Switch,"Sep 29, 1994",0.0,0,0.0,0,0.0,0,0,0.0
+c814b4c899793af6,Rafael Fiziev,Ataman,13,4,0,172.72,70.31,180.34,Switch,"Mar 05, 1993",4.77,52,4.77,50,0.89,72,90,0.0
+84b3e7d38f2d2ec5,Neil Magny,The Haitian Sensation,30,14,0,190.5,77.11,203.2,Orthodox,"Aug 03, 1987",3.45,46,2.47,51,2.15,39,55,0.2
+98a58c26c5b1ed17,Patricio Freire,Pitbull,37,8,0,167.64,65.77,170.18,Orthodox,"Jul 07, 1987",2.68,43,4.23,57,1.49,33,88,0.6
+e0d3d9b564f95635,Lucas Rocha,Fenomeno,17,2,0,160.02,56.7,162.56,Orthodox,"Aug 12, 2000",2.0,44,4.48,39,0.0,0,61,0.0
+333b9e5c723ac873,Aleksandar Rakic,Rocket,14,5,0,193.04,92.99,198.12,Orthodox,"Feb 06, 1992",4.16,50,2.91,51,0.66,23,85,0.1
+e90a2f22417af68e,Azamat Murzakanov,The Professional,15,0,0,177.8,92.99,180.34,Southpaw,"Apr 12, 1989",4.93,57,2.86,61,0.58,15,83,0.0
+764d39074a352e33,Thomas Petersen,The Train,10,3,0,185.42,119.75,187.96,Southpaw,"Mar 30, 1995",3.74,59,2.94,57,4.42,66,100,0.6
+275aca31f61ba28c,Islam Makhachev,,27,1,0,177.8,77.11,177.8,Southpaw,"Oct 27, 1991",2.63,58,1.55,61,3.2,53,90,1.1
+7a5e8c94a86f9895,Chris Barnett,Beastboy,23,9,0,175.26,120.2,190.5,Orthodox,"Jun 14, 1986",4.21,47,6.53,39,0.0,0,33,0.0
+2caf993f53541fa1,Andreas Gustafsson,Bane,12,2,0,185.42,77.11,185.42,Orthodox,"Feb 20, 1991",5.83,76,2.79,45,6.43,58,100,0.0
+01c9e4013afce141,Michael Aswell,The Texas Kid,10,3,0,172.72,65.77,175.26,Orthodox,"Sep 27, 2000",9.1,44,7.93,54,0.0,0,57,0.0
+a9da3158dd2c2b5a,Jack Jenkins,Phar,13,4,0,170.18,65.77,172.72,Switch,"Nov 03, 1993",4.5,61,2.97,58,1.78,64,67,0.0
+ec13c393d029297d,Kaue Fernandes,,10,2,0,175.26,70.31,185.42,Orthodox,"Mar 17, 1995",4.0,54,1.32,61,1.3,100,76,0.0
+e132d47bd9efbbe0,Rafa Garcia,Gifted,17,4,0,170.18,70.31,177.8,Orthodox,"Aug 05, 1994",4.01,43,4.47,60,3.21,43,77,0.2
+8f765fd5775a8873,Rinat Fakhretdinov,Gladiator,23,1,1,182.88,77.11,187.96,Orthodox,"Sep 28, 1991",4.78,52,3.58,53,3.95,34,91,0.2
+e94085e821bd81de,Sam Hughes,Sampage,10,6,0,165.1,52.16,162.56,Orthodox,"Jun 28, 1992",4.41,46,4.57,58,1.08,32,60,0.1
+31dbfbe4e7a6727c,Trey Waters,The Truth,9,1,0,195.58,77.11,195.58,Orthodox,"Feb 21, 1995",6.43,44,5.61,56,0.44,33,85,0.9
+4798e823ada58fe9,Veronica Hardy,,9,5,1,162.56,56.7,162.56,Southpaw,"Oct 30, 1995",3.12,45,3.48,49,0.93,41,55,0.3
+c15fa95b9a12fde4,Junior Tafa,The Juggernaut,6,4,0,190.5,92.99,190.5,Orthodox,"Sep 21, 1996",3.19,51,2.49,51,0.0,0,69,0.0
+65f09bacd3957381,Cory Sandhagen,,18,5,0,180.34,61.23,177.8,Switch,"Apr 20, 1992",5.06,45,3.34,56,1.28,34,63,0.3
+5e9ca8dd7d783a75,Alden Coria,Cobra,10,3,0,,56.7,,Orthodox,"Apr 24, 1998",0.0,0,0.0,0,0.0,0,0,0.0
+f1fac969a1d70b08,Leon Edwards,Rocky,22,5,0,187.96,77.11,187.96,Southpaw,"Aug 25, 1991",2.62,54,2.42,53,1.18,36,63,0.4
+d0fd0d9ee560dae7,Brando Pericic,The Balkan Bear,4,1,0,,120.2,,,"Aug 03, 1994",0.0,0,0.0,0,0.0,0,0,0.0
+b4b496ec2197ee3e,Navajo Stirling,,7,0,0,193.04,92.99,200.66,Orthodox,"Nov 07, 1997",6.43,52,2.49,61,1.2,30,78,0.0
+71171fc96445bf65,Vitor Petrino,,12,2,0,187.96,120.2,195.58,Orthodox,"Aug 28, 1997",2.72,45,2.6,47,3.25,58,71,1.0
+cdb7b38b1b357f26,Louie Sutherland,The Vanilla Gorilla,10,3,0,,120.2,,,"Feb 08, 1994",0.0,0,0.0,0,0.0,0,0,0.0
+6e8f1bcdda94ff45,Ibo Aslan,The Last Ottoman,14,3,0,190.5,92.99,195.58,Orthodox,"Apr 23, 1996",5.09,47,3.47,59,0.0,0,86,0.0
+3a46b268013afede,Kevin Holland,Trailblazer,28,14,0,190.5,77.11,205.74,Orthodox,"Nov 05, 1992",4.3,50,3.22,50,0.82,38,55,0.6
+52c2ae6d2f2d2613,Youssef Zalal,The Moroccan Devil,17,5,1,177.8,65.77,182.88,Switch,"Sep 04, 1996",3.07,50,1.8,66,2.09,30,59,1.3
